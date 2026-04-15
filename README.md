@@ -1,51 +1,49 @@
 # AMAP website scraper
 
-This is a simple information collector for the french AMAP network. It scrapes the [AMAP website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured object list.
+This is a simple information collector for the french AMAP  Île-de-France network. It scrapes the [AMAP Île-de-France website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured list of objects.
 
 # Usage
 
-The scraper can be imported as a package or launched in the command line via the cli.
+The scraper can be imported as a package or launched in the command line via the cli. See the embedded *docstrings* for full documentation on parameters or read this README further.
 
 ## Package usage
 
 The typical use case is importing the `AmapClient` in your code and the `AmapClientError` class eventually.
 
-An `AmapClient` object exposes a fluent interface to easily set the target parameters. Here below an import example (please see the documentation for parameter detailed description).
+An `AmapClient` object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
 
 ```Python
 from amap_scraper.core import AmapClient
 
 c = AmapClient().with_department(75).with_km_radius(10)
 results = c.get_amap_list()
+```
 
-=> [
-    {
-        "name": "AMAP Coquéron",
-        "status": "available_places",
-        "website": "",
-        "contact": {
-        "name": "Agnès",
-        "emails": [
-            "email1@gmail.com",
-            "email2@sauvegarde-paris.fr"
-        ],
-        "phones": [
-            "01 XX XX XX XX",
-            "07 XX XX XX XX"
-        ]
-        },
-            "place": {
-            "name": "Sauvegarde Paris",
-            "address": "3 rue Coq Héron, 75001 PARIS",
-            "delivery_time": "Mardi 17H-19H"
-        },
-        "comment": "Venez nombreux"
-    },
-    {
-        ...
-    },
-   ...
-   ]
+where `results` is a list of `dict`s like:
+
+```json
+{
+  "name": "AMAP Coquéron",
+  "status": "available_places",
+  "website": "",
+  "contact": {
+  "name": "Agnès",
+  "emails": [
+      "email1@gmail.com",
+      "email2@sauvegarde-paris.fr"
+  ],
+  "phones": [
+      "01 XX XX XX XX",
+      "07 XX XX XX XX"
+  ]
+  },
+      "place": {
+      "name": "Sauvegarde Paris",
+      "address": "3 rue Coq Héron, 75001 PARIS",
+      "delivery_time": "Mardi 17H-19H"
+  },
+  "comment": "Venez nombreux"
+}
 ```
 
 ## Cli usage
@@ -68,13 +66,13 @@ The cli is built with [Typer](https://typer.tiangolo.com/), you can explore comm
 
 # Docker containerization
 
-## Build
+## Build image
 
 ```bash
 docker build -t amap-scraper .
 ```
 
-## Run
+## Run the command
 
 Pass any `amap_list` option directly after the image name:
 
@@ -89,7 +87,7 @@ docker run --rm -v /tmp:/out amap-scraper --department 75 --output-file /out/ama
 docker run --rm amap-scraper --zip-code 75012
 ```
 
-# Run tests
+## Run tests
 
 Tests require the dev dependencies. Run them with:
 
@@ -103,7 +101,7 @@ To run a specific test file:
 uv run pytest tests/core/test_parser.py -v
 ```
 
-# Run linter
+## Run the linter
 
 Using [ruff](https://docs.astral.sh/ruff/) for linting:
 
