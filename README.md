@@ -54,11 +54,9 @@ The cli is built with [Typer](https://typer.tiangolo.com/), you can explore comm
 
 `--department` The department zip code (available options: 75, 77, 78, 91, 92, 93, 94, 95)  [default: 75]
 
+`--zip-code` The french zip code to search around (when specified, it fully **overrides** the `--department` parameter)
+
 `--km-radius` The Search radius in km (available options: 2, 5, 10, 15, 20) [default: 2]
-
-`--zip-code` The french zip code to search around (this will ignore the `--department` parameter)
-
-`--coordinates` The latitude and longitude (this will ignore the `--department` and `--zip-code` parameters)
 
 `--output-file` The otput file path (.json or .csv)
 
@@ -85,14 +83,6 @@ Retrieving all AMAP points around the 12th arrondissement of Paris (zip code 750
 ```
 
 ### Example 3:
-
-Retrieving all AMAP points around a precise (latitude, longitude) coordinate tuple, over a radius of 5 km, and see results in the standard output:
-
-```bash
-  uv run python main.py --coordinates 48.8910883 --coordinates 2.3442207 --km_radius 5
-```
-
-### Example 4:
 
 Retrieving all AMAP points in Montreuil (Seine-Saint-Denis) which is in the 93rd department and see results in the standard output:
 

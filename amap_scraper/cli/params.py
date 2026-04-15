@@ -15,7 +15,6 @@ def run(
     department: str = typer.Option(DEFAULT_DEPT, "--department", help="Department code (75, 77, 78, 91, 92, 93, 94, 95)"),
     km_radius: str = typer.Option(DEFAULT_RADIUS, "--km-radius", help="Search radius in km (2, 5, 10, 15, 20)"),
     zip_code: Optional[str] = typer.Option(None, "--zip-code", help="French zip code to search around"),
-    coordinates: Optional[tuple[float, float]] = typer.Option((None, None), "--coordinates", help="Latitude and longitude", show_default=False),
     output_file: Optional[Path] = typer.Option(None, "--output-file", help="Output file path (.json or .csv)"),
 ) -> None:
     if output_file is not None and output_file.suffix not in (".json", ".csv"):
@@ -27,10 +26,6 @@ def run(
 
         if zip_code:
             client = client.with_zip_code(zip_code)
-
-        lat, lng = coordinates or (None, None)
-        if lat is not None and lng is not None:
-            client = client.with_coordinates(str(lat), str(lng))
 
         results = client.get_amap_list()
 

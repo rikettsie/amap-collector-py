@@ -44,8 +44,8 @@ class AmapListParser:
                         "phones": self.__links(partage, "contact-tel"),
                     },
                     "place": {
-                        "name": self.__require(partage, "partage-nom", context=f"partage of '{amap_name}'"),
-                        "address": self.__require(partage, "partage-adresse", context=f"partage of '{amap_name}'", separator=", "),
+                        "name": self.__text(partage, "partage-nom"),
+                        "address": self.__text(partage, "partage-adresse", separator=", "),
                         "delivery_time": self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip(),
                     },
                     "comment": self.__text(partage, "partage-commentaire"),

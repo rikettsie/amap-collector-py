@@ -13,9 +13,6 @@ class AmapClient:
         self.__department: Optional[str] = None   # `departement` param
         self.__km_radius: Optional[str] = None    # `km_autour` param
         self.__zip_code: Optional[str] = None     # `cp` param
-        self.__latitude: Optional[str] = None     # `lat` param
-        self.__longitude: Optional[str] = None    # `lng` param
-
     def with_department(self, department: str) -> Self:
         self.__department = validations.validate_department(department)
         return self
@@ -28,12 +25,6 @@ class AmapClient:
         self.__zip_code = validations.validate_zip_code(zip_code)
         return self
     
-    def with_coordinates(self, latitude: str, longitude: str) -> Self:
-        coords = validations.validate_coordinates(latitude, longitude)
-        self.__latitude, self.__longitude = coords
-        return self
-
-
     def get_amap_list(self) -> list[dict[str, str]]:
         try:
             return AmapList().call(self.__payload())
@@ -49,9 +40,5 @@ class AmapClient:
 
         if self.__zip_code:
             pl["cp"] = self.__zip_code
-
-        if self.__latitude and self.__longitude:
-            pl["lat"] = self.__latitude
-            pl["lng"] = self.__longitude
 
         return pl

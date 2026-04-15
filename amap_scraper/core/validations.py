@@ -32,20 +32,4 @@ def validate_zip_code(zip_code: int|str) -> str:
     except ValueError:
         raise ValidationError(f"Parameter `zip_code` must be represented by a valid french zip code number, but {zip_code} was given")
 
-def validate_coordinates(
-    latitude: float|str,
-    longitude: float|str
-) -> tuple[str, str]:
-    try:
-        lat = float(latitude)
-        lng = float(longitude)
-
-        if lat > 90.0 or lat < -90.0:
-            raise ValueError
-        if lng > 180.0 or lng < -180.0:
-            raise ValueError
-        
-        return (f"{lat:.7f}", f"{lng:.7f}")
-    except ValueError:
-        raise ValidationError(f"Parameters `latitude` and `longitude` must be represent valid geo positional floating point numbers, but ({longitude}, {latitude}) were given")
 

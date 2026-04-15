@@ -36,7 +36,6 @@ class TestParameterForwarding:
         instance.with_department.return_value = instance
         instance.with_km_radius.return_value = instance
         instance.with_zip_code.return_value = instance
-        instance.with_coordinates.return_value = instance
         instance.get_amap_list.return_value = []
         return instance
 
@@ -58,11 +57,6 @@ class TestParameterForwarding:
             runner.invoke(app, ["--zip-code", "75019"])
         instance.with_zip_code.assert_called_once_with("75019")
 
-    def test_coordinates_forwarded(self) -> None:
-        with patch("amap_scraper.cli.params.AmapClient") as MockClient:
-            instance = self._mock_client(MockClient)
-            runner.invoke(app, ["--coordinates", "48.8566", "2.3522"])
-        instance.with_coordinates.assert_called_once_with("48.8566", "2.3522")
 
     def test_no_zip_code_not_forwarded(self) -> None:
         with patch("amap_scraper.cli.params.AmapClient") as MockClient:

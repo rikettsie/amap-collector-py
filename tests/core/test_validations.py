@@ -4,7 +4,6 @@ from amap_scraper.core.validations import (
     validate_department,
     validate_km_radius,
     validate_zip_code,
-    validate_coordinates,
     ValidationError,
     ALLOWED_DEPTS,
     ALLOWED_RADII,
@@ -44,34 +43,6 @@ class TestValidateKmRadius:
         with pytest.raises(ValidationError):
             validate_km_radius("")
 
-
-class TestValidateCoordinates:
-    def test_valid_floats(self) -> None:
-        lat, lng = validate_coordinates(48.8566, 2.3522)
-        assert lat == "48.8566000"
-        assert lng == "2.3522000"
-
-    def test_valid_strings(self) -> None:
-        lat, lng = validate_coordinates("48.8566", "2.3522")
-        assert lat == "48.8566000"
-        assert lng == "2.3522000"
-
-    def test_rounded_to_seven_decimals(self) -> None:
-        lat, lng = validate_coordinates(48.123456789, 2.987654321)
-        assert lat == "48.1234568"
-        assert lng == "2.9876543"
-
-    def test_out_of_range_lat_raises(self) -> None:
-        with pytest.raises(ValidationError):
-            validate_coordinates(91.0, 2.3522)
-
-    def test_out_of_range_lng_raises(self) -> None:
-        with pytest.raises(ValidationError):
-            validate_coordinates(48.8566, 181.0)
-
-    def test_invalid_raises(self) -> None:
-        with pytest.raises(ValidationError):
-            validate_coordinates("not-a-float", "2.3")
 
 
 class TestValidateZipCode:

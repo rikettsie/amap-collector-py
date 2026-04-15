@@ -33,14 +33,14 @@ def test_missing_amap_nom_raises(parser: AmapListParser) -> None:
         parser.parse(load("missing_amap_nom.html"))
 
 
-def test_missing_partage_nom_raises(parser: AmapListParser) -> None:
-    with pytest.raises(ParserError, match="partage-nom"):
-        parser.parse(load("missing_partage_nom.html"))
+def test_missing_partage_nom_returns_empty_string(parser: AmapListParser) -> None:
+    results = parser.parse(load("missing_partage_nom.html"))
+    assert results[0]["place"]["name"] == ""
 
 
-def test_missing_partage_adresse_raises(parser: AmapListParser) -> None:
-    with pytest.raises(ParserError, match="partage-adresse"):
-        parser.parse(load("missing_partage_adresse.html"))
+def test_missing_partage_adresse_returns_empty_string(parser: AmapListParser) -> None:
+    results = parser.parse(load("missing_partage_adresse.html"))
+    assert results[0]["place"]["address"] == ""
 
 
 def test_parse_returns_correct_count(results: list) -> None:

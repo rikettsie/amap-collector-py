@@ -13,8 +13,6 @@ class TestClientPayload:
         assert payload["departement"] == "75"
         assert payload["km_autour"] == "2"
         assert "cp" not in payload
-        assert "lat" not in payload
-        assert "lng" not in payload
 
     def test_payload_with_department(self) -> None:
         client = AmapClient().with_department("92")
@@ -30,17 +28,6 @@ class TestClientPayload:
             client = AmapClient().with_zip_code("75019")
         assert client._AmapClient__payload()["cp"] == "75019"
 
-    def test_payload_with_coordinates(self) -> None:
-        client = AmapClient().with_coordinates("48.8566", "2.3522")
-        payload = client._AmapClient__payload()
-        assert payload["lat"] == "48.8566000"
-        assert payload["lng"] == "2.3522000"
-
-    def test_payload_without_partial_coordinates(self) -> None:
-        # Only lat set — should not appear in payload
-        client = AmapClient()
-        client._AmapClient__latitude = "48.8566"
-        assert "lat" not in client._AmapClient__payload()
 
 
 class TestClientValidation:
@@ -52,9 +39,6 @@ class TestClientValidation:
         with pytest.raises(ValidationError):
             AmapClient().with_km_radius("3")
 
-    def test_invalid_coordinates_raises(self) -> None:
-        with pytest.raises(ValidationError):
-            AmapClient().with_coordinates("not-a-float", "2.3")
 
 
 class TestClientGetAmapList:
