@@ -102,12 +102,35 @@ Like the previous one, but saving the output iton a JSON file:
 
 ## Build
 
-...
+```bash
+docker build -t amap-scraper .
+```
 
 ## Run
 
-...
+Pass any `amap_list` option directly after the image name:
+
+```bash
+# stdout — all AMAPs in dept 93 within 5 km
+docker run --rm amap-scraper --department 93 --km-radius 5
+
+# save to a JSON file on the host
+docker run --rm -v /tmp:/out amap-scraper --department 75 --output-file /out/amaps.json
+
+# narrow search by zip code
+docker run --rm amap-scraper --zip-code 75012
+```
 
 # Run tests
 
-...
+Tests require the dev dependencies. Run them with:
+
+```bash
+uv run pytest
+```
+
+To run a specific test file:
+
+```bash
+uv run pytest tests/core/test_parser.py -v
+```

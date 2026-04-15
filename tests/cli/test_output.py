@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import stat
 from pathlib import Path
 import pytest
@@ -68,6 +69,7 @@ class TestEnsureWritable:
         with pytest.raises(OutputError, match="Directory does not exist"):
             ensure_writable(Path("/nonexistent/dir/out.json"))
 
+    @pytest.mark.skipif(os.getuid() == 0, reason="root bypasses file permission checks")
     def test_readonly_file_raises(self, tmp_path: Path) -> None:
         out = tmp_path / "out.json"
         out.write_text("{}")
