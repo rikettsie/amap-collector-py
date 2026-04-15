@@ -37,7 +37,15 @@ def validate_coordinates(
     longitude: float|str
 ) -> tuple[str, str]:
     try:
-        return (f"{float(latitude):.4f}", f"{float(longitude):.4f}")
+        lat = float(latitude)
+        lng = float(longitude)
+
+        if lat > 90.0 or lat < -90.0:
+            raise ValueError
+        if lng > 180.0 or lng < -180.0:
+            raise ValueError
+        
+        return (f"{lat:.7f}", f"{lng:.7f}")
     except ValueError:
-        raise ValidationError(f"Parameters `latitude` and `longitude` must be represent floating point numbers, but ({longitude}, {latitude}) were given")
+        raise ValidationError(f"Parameters `latitude` and `longitude` must be represent valid geo positional floating point numbers, but ({longitude}, {latitude}) were given")
 

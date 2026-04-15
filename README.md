@@ -8,14 +8,14 @@ The scraper can be imported as a package or launched in the command line via the
 
 ## Package usage
 
-The typical usage is importing the AMAP `Client` and `ClientError` classes in your code.
+The typical use case is importing the `AmapClient` in your code and the `AmapClientError` class eventually.
 
-The `Client` instantiated object exposes a fluent interface to easily set the target parameters. Here below an import example (please see the documentation for parameter detailed description).
+An `AmapClient` object exposes a fluent interface to easily set the target parameters. Here below an import example (please see the documentation for parameter detailed description).
 
 ```Python
-from amap_scraper.core import Client, ClientError
+from amap_scraper.core import AmapClient
 
-c = Client().with_department(75).with_km_radius(10)
+c = AmapClient().with_department(75).with_km_radius(10)
 results = c.get_amap_list()
 
 => [

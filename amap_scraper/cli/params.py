@@ -3,7 +3,7 @@ from typing import Optional
 
 import typer
 
-from amap_scraper.core.client import Client, ClientError
+from amap_scraper.core.client import AmapClient, AmapClientError
 from amap_scraper.core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
 from amap_scraper.cli.output import OutputError, write_output
 
@@ -23,7 +23,7 @@ def run(
         raise typer.Exit(code=1)
 
     try:
-        client = Client().with_department(department).with_km_radius(km_radius)
+        client = AmapClient().with_department(department).with_km_radius(km_radius)
 
         if zip_code:
             client = client.with_zip_code(zip_code)
@@ -34,7 +34,7 @@ def run(
 
         results = client.get_amap_list()
 
-    except (ValidationError, ClientError, OutputError) as e:
+    except (ValidationError, AmapClientError, OutputError) as e:
         typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
 

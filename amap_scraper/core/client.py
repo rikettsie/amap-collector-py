@@ -1,13 +1,13 @@
 from typing import Optional, Self
 import requests
 
-import core.validations as validations
+import amap_scraper.core.validations as validations
 from amap_scraper.core.endpoint import AmapList
 
-class ClientError(RuntimeError):
+class AmapClientError(RuntimeError):
     pass
 
-class Client:
+class AmapClient:
 
     def __init__(self) -> None:
         self.__department: Optional[str] = None   # `departement` param
@@ -38,7 +38,7 @@ class Client:
         try:
             return AmapList().call(self.__payload())
         except requests.RequestException as err:
-            raise ClientError(err)
+            raise AmapClientError(err)
 
 
     def __payload(self) -> dict[str, str]:

@@ -15,43 +15,43 @@ class AmapListParser:
             return []
 
         for article in container.find_all("article", class_="fiche-amap"):
-            amap_name = self.__text(article, "amap-nom")
             amap_status = "completed" if self.__text(article, "statut-complet") == 'complet' else 'available_places'
+            amap_name = self.__amap_name(article)  # must come after status check (mutates the tree)
             amap_website = self.__href(article, "amap-link")
 
-            el = {
+            base = {
                 "name": amap_name,
                 "status": amap_status,
                 "website": amap_website,
             }
 
-            partages = article.find_all(class_="partage")
-            if partages:
-                for partage in partages:
-                    contact_emails = self.__links(partage, "contact-email")
-                    contact_tels = self.__links(partage, "contact-tel")
-                    el = {
-                        **el,
-                        **{
-                            "contact": {
-                                "name": self.__contact_name(partage),
-                                "emails": contact_emails,
-                                "phones": contact_tels,
-                            },
-                            "place": {
-                                "name": self.__text(partage, "partage-nom"),
-                                "address": self.__text(partage, "partage-adresse", separator=", "),
-                                "delivery_time": self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip(),
-                            },
-                            "comment": self.__text(partage, "partage-commentaire"),
-                        }
-                    }
-            
-            # Dedoubling
-            hashed_el = hashlib.sha256(json.dumps(el, sort_keys=True).encode()).hexdigest()
-            results[hashed_el] = el
+            for partage in article.find_all(class_="partage"):
+                entry = {
+                    **base,
+                    "contact": {
+                        "name": self.__contact_name(partage),
+                        "emails": self.__links(partage, "contact-email"),
+                        "phones": self.__links(partage, "contact-tel"),
+                    },
+                    "place": {
+                        "name": self.__text(partage, "partage-nom"),
+                        "address": self.__text(partage, "partage-adresse", separator=", "),
+                        "delivery_time": self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip(),
+                    },
+                    "comment": self.__text(partage, "partage-commentaire"),
+                }
+                hashed = hashlib.sha256(json.dumps(entry, sort_keys=True).encode()).hexdigest()
+                results[hashed] = entry
 
         return list(results.values())
+
+    def __amap_name(self, article: Tag) -> str:
+        found = article.find(class_="amap-nom")
+        if not found:
+            return ""
+        for span in found.find_all(class_="statut-complet"):
+            span.extract()
+        return found.get_text(strip=True)
 
     def __text(self, el: Tag, css_class: str, separator: str = "") -> str:
         found = el.find(class_=css_class)
