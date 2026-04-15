@@ -1,6 +1,6 @@
 # AMAP website scraper
 
-This is a simple information collector for the french AMAP network. It scrapes the AMAP website and returns a structured object list.
+This is a simple information collector for the french AMAP network. It scrapes the [AMAP website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured object list.
 
 # Usage
 
@@ -50,7 +50,7 @@ results = c.get_amap_list()
 
 ## Cli usage
 
-The cli is built with [Typer](https://typer.tiangolo.com/), you can explore command parameters via the `--help` modifier. See details below.
+The cli is built with [Typer](https://typer.tiangolo.com/), you can explore command parameters via the `--help` modifier:
 
 `--department` The department zip code (available options: 75, 77, 78, 91, 92, 93, 94, 95)  [default: 75]
 
@@ -62,41 +62,9 @@ The cli is built with [Typer](https://typer.tiangolo.com/), you can explore comm
 
 `--help` It summarizes all these parameters and exit
 
-**Note:** Results are shown by default in the standard output, unless a file path is specified via the `--output-file` modifier (`JSON` and `CSV` formats are only supported).
+**Note 1:** Results are shown by default in the standard output, unless a file path is specified via the `--output-file` modifier (`JSON` and `CSV` formats are only supported).
 
-## Examples
-
-### Example 1:
-
-Retrieving all AMAP points in central Paris which is in the 75th department, across a radius of 10 km, and see results in the standard output:
-
-```bash
-  uv run python main.py --department 75 --km_radius 10
-```
-
-### Example 2:
-
-Retrieving all AMAP points around the 12th arrondissement of Paris (zip code 75012), and see results in the standard output:
-
-```bash
-  uv run python main.py --zip_code 75
-```
-
-### Example 3:
-
-Retrieving all AMAP points in Montreuil (Seine-Saint-Denis) which is in the 93rd department and see results in the standard output:
-
-```bash
-  uv run python main.py --department 93 
-```
-
-### Example 5:
-
-Like the previous one, but saving the output iton a JSON file:
-
-```bash
-  uv run python main.py --department 93 --output-file /tmp/amaps_department93.json
-```
+**Note 2:** The executable command name exposed after package installation is `amap_list`.
 
 # Docker containerization
 
@@ -133,4 +101,12 @@ To run a specific test file:
 
 ```bash
 uv run pytest tests/core/test_parser.py -v
+```
+
+# Run linter
+
+Using [ruff](https://docs.astral.sh/ruff/) for linting:
+
+```bash
+docker run --rm amap-scraper uv run --with ruff ruff check .
 ```
