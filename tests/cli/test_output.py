@@ -4,7 +4,7 @@ import os
 import stat
 from pathlib import Path
 import pytest
-from amap_scraper.cli.output import flatten_dict, ensure_writable, write_output, OutputError
+from amap_collector.cli.output import flatten_dict, ensure_writable, write_output, OutputError
 
 
 SAMPLE = [

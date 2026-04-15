@@ -7,7 +7,7 @@ RUN pip install uv
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev --no-install-project
 
-COPY amap_scraper/ ./amap_scraper/
+COPY amap_collector/ ./amap_collector/
 COPY main.py ./
 COPY tests/ ./tests/
 RUN uv sync --frozen

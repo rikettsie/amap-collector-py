@@ -1,10 +1,10 @@
-# AMAP website scraper
+# AMAP collector
 
-This is a simple information collector for the french AMAP  Île-de-France network. It scrapes the [AMAP Île-de-France website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured list of objects.
+This is a simple information collector of the french AMAP  Île-de-France network. It scrapes the [AMAP Île-de-France website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured list of objects.
 
 # Usage
 
-The scraper can be imported as a package or launched in the command line via the cli. See the embedded *docstrings* for full documentation on parameters or read this README further.
+The client can be imported as a package or launched in the command line via the cli. See the embedded *docstrings* for full documentation on parameters or read this README further.
 
 ## Package usage
 
@@ -13,7 +13,7 @@ The typical use case is importing the `AmapClient` in your code and the `AmapCli
 An `AmapClient` object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
 
 ```Python
-from amap_scraper.core import AmapClient
+from amap_collector.core import AmapClient
 
 c = AmapClient().with_department(75).with_km_radius(10)
 results = c.get_amap_list()
@@ -62,29 +62,29 @@ The cli is built with [Typer](https://typer.tiangolo.com/), you can explore comm
 
 **Note 1:** Results are shown by default in the standard output, unless a file path is specified via the `--output-file` modifier (`JSON` and `CSV` formats are only supported).
 
-**Note 2:** The executable command name exposed after package installation is `amap_list`.
+**Note 2:** The executable command name exposed after package installation is `amap_collector`.
 
 # Docker containerization
 
 ## Build image
 
 ```bash
-docker build -t amap-scraper .
+docker build -t amap-collector .
 ```
 
 ## Run the command
 
-Pass any `amap_list` option directly after the image name:
+Pass any `amap_collector` option directly after the image name:
 
 ```bash
 # stdout — all AMAPs in dept 93 within 5 km
-docker run --rm amap-scraper --department 93 --km-radius 5
+docker run --rm amap-collector --department 93 --km-radius 5
 
 # save to a JSON file on the host
-docker run --rm -v /tmp:/out amap-scraper --department 75 --output-file /out/amaps.json
+docker run --rm -v /tmp:/out amap-collector --department 75 --output-file /out/amaps.json
 
 # narrow search by zip code
-docker run --rm amap-scraper --zip-code 75012
+docker run --rm amap-collector --zip-code 75012
 ```
 
 ## Run tests
@@ -106,5 +106,5 @@ uv run pytest tests/core/test_parser.py -v
 Using [ruff](https://docs.astral.sh/ruff/) for linting:
 
 ```bash
-docker run --rm amap-scraper uv run --with ruff ruff check .
+docker run --rm amap-collector uv run --with ruff ruff check .
 ```

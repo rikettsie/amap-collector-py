@@ -1,26 +1,26 @@
 from unittest.mock import MagicMock, patch
 import pytest
 import requests
-from amap_scraper.core.endpoint import AmapList, ZipCodeInfo
+from amap_collector.core.endpoint import AmapList, ZipCodeInfo
 
 
 class TestZipCodeInfo:
     def test_returns_parsed_json(self) -> None:
         mock_response = MagicMock()
         mock_response.json.return_value = {"code": "75019", "centre": {"coordinates": [2.38, 48.88]}}
-        with patch("amap_scraper.core.endpoint.requests.get", return_value=mock_response):
+        with patch("amap_collector.core.endpoint.requests.get", return_value=mock_response):
             result = ZipCodeInfo().call("75019")
         assert result["code"] == "75019"
 
     def test_returns_empty_dict_on_http_error(self) -> None:
         mock_response = MagicMock()
         mock_response.raise_for_status.side_effect = requests.HTTPError()
-        with patch("amap_scraper.core.endpoint.requests.get", return_value=mock_response):
+        with patch("amap_collector.core.endpoint.requests.get", return_value=mock_response):
             result = ZipCodeInfo().call("00000")
         assert result == {}
 
     def test_returns_empty_dict_on_connection_error(self) -> None:
-        with patch("amap_scraper.core.endpoint.requests.get", side_effect=requests.ConnectionError()):
+        with patch("amap_collector.core.endpoint.requests.get", side_effect=requests.ConnectionError()):
             result = ZipCodeInfo().call("75019")
         assert result == {}
 

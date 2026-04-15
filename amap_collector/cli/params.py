@@ -3,9 +3,9 @@ from typing import Optional
 
 import typer
 
-from amap_scraper.core.client import AmapClient, AmapClientError
-from amap_scraper.core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
-from amap_scraper.cli.output import OutputError, write_output
+from amap_collector.core.client import AmapClient, AmapClientError
+from amap_collector.core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
+from amap_collector.cli.output import OutputError, write_output
 
 app = typer.Typer(add_completion=False)
 

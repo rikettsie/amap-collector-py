@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from amap_scraper.core.validations import (
+from amap_collector.core.validations import (
     validate_department,
     validate_km_radius,
     validate_zip_code,
@@ -48,13 +48,13 @@ class TestValidateKmRadius:
 class TestValidateZipCode:
     def test_valid_zip_code(self) -> None:
         mock_response = {"code": "75019"}
-        with patch("amap_scraper.core.validations.ZipCodeInfo") as MockZip:
+        with patch("amap_collector.core.validations.ZipCodeInfo") as MockZip:
             MockZip.return_value.call.return_value = mock_response
             result = validate_zip_code("75019")
         assert result == "75019"
 
     def test_invalid_zip_returns_no_code(self) -> None:
-        with patch("amap_scraper.core.validations.ZipCodeInfo") as MockZip:
+        with patch("amap_collector.core.validations.ZipCodeInfo") as MockZip:
             MockZip.return_value.call.return_value = {}
             with pytest.raises(ValidationError):
                 validate_zip_code("00000")

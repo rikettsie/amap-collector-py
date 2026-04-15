@@ -1,5 +1,5 @@
 [project]
-name = "amap-scraper"
+name = "amap-collector"
 version = "0.1.0"
 authors = [
     { name = "Enrico Fusto", email = "enrico.fusto@protonmail.com" }
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-amap_list = "amap_scraper.cli.params:app"
+amap_collector = "amap_collector.cli.params:app"
 
 [build-system]
 requires = ["hatchling"]

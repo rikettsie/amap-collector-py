@@ -1,8 +1,8 @@
 from unittest.mock import patch
 import pytest
 import requests
-from amap_scraper.core.client import AmapClient, AmapClientError
-from amap_scraper.core.validations import ValidationError
+from amap_collector.core.client import AmapClient, AmapClientError
+from amap_collector.core.validations import ValidationError
 
 
 class TestClientPayload:
@@ -23,7 +23,7 @@ class TestClientPayload:
         assert client._AmapClient__payload()["km_autour"] == "10"
 
     def test_payload_with_zip_code(self) -> None:
-        with patch("amap_scraper.core.validations.ZipCodeInfo") as MockZip:
+        with patch("amap_collector.core.validations.ZipCodeInfo") as MockZip:
             MockZip.return_value.call.return_value = {"code": "75019"}
             client = AmapClient().with_zip_code("75019")
         assert client._AmapClient__payload()["cp"] == "75019"
@@ -44,13 +44,13 @@ class TestClientValidation:
 class TestClientGetAmapList:
     def test_returns_results(self) -> None:
         expected = [{"name": "AMAP Test"}]
-        with patch("amap_scraper.core.client.AmapList") as MockAmapList:
+        with patch("amap_collector.core.client.AmapList") as MockAmapList:
             MockAmapList.return_value.call.return_value = expected
             result = AmapClient().get_amap_list()
         assert result == expected
 
     def test_wraps_request_exception_as_client_error(self) -> None:
-        with patch("amap_scraper.core.client.AmapList") as MockAmapList:
+        with patch("amap_collector.core.client.AmapList") as MockAmapList:
             MockAmapList.return_value.call.side_effect = requests.RequestException("timeout")
             with pytest.raises(AmapClientError):
                 AmapClient().get_amap_list()

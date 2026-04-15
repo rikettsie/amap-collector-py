@@ -1,8 +1,8 @@
 from typing import Optional, Self
 import requests
 
-import amap_scraper.core.validations as validations
-from amap_scraper.core.endpoint import AmapList
+import amap_collector.core.validations as validations
+from amap_collector.core.endpoint import AmapList
 
 class AmapClientError(RuntimeError):
     """Raised when an HTTP error occurs while fetching AMAP data."""

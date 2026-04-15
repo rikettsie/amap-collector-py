@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from amap_scraper.core.parser import AmapListParser, ParserError
+from amap_collector.core.parser import AmapListParser, ParserError
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
