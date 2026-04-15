@@ -1,8 +1,12 @@
 from pathlib import Path
 import pytest
-from amap_scraper.core.parser import AmapListParser
+from amap_scraper.core.parser import AmapListParser, ParserError
 
-FIXTURE = (Path(__file__).parent.parent / "fixtures" / "amap_list.html").read_text(encoding="utf-8")
+FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
+
+
+def load(name: str) -> str:
+    return (FIXTURES_DIR / name).read_text(encoding="utf-8")
 
 
 @pytest.fixture
@@ -12,11 +16,31 @@ def parser() -> AmapListParser:
 
 @pytest.fixture
 def results(parser: AmapListParser) -> list:
-    return parser.parse(FIXTURE)
+    return parser.parse(load("amap_list.html"))
 
 
 def test_empty_html_returns_empty_list(parser: AmapListParser) -> None:
-    assert parser.parse("<html></html>") == []
+    assert parser.parse(load("empty.html")) == []
+
+
+def test_missing_container_in_full_page_raises(parser: AmapListParser) -> None:
+    with pytest.raises(ParserError, match="liste-fiches"):
+        parser.parse(load("no_container.html"))
+
+
+def test_missing_amap_nom_raises(parser: AmapListParser) -> None:
+    with pytest.raises(ParserError, match="amap-nom"):
+        parser.parse(load("missing_amap_nom.html"))
+
+
+def test_missing_partage_nom_raises(parser: AmapListParser) -> None:
+    with pytest.raises(ParserError, match="partage-nom"):
+        parser.parse(load("missing_partage_nom.html"))
+
+
+def test_missing_partage_adresse_raises(parser: AmapListParser) -> None:
+    with pytest.raises(ParserError, match="partage-adresse"):
+        parser.parse(load("missing_partage_adresse.html"))
 
 
 def test_parse_returns_correct_count(results: list) -> None:
@@ -25,13 +49,11 @@ def test_parse_returns_correct_count(results: list) -> None:
 
 
 def test_completed_status(results: list) -> None:
-    amap = results[0]
-    assert amap["status"] == "completed"
+    assert results[0]["status"] == "completed"
 
 
 def test_available_status(results: list) -> None:
-    amap = results[1]
-    assert amap["status"] == "available_places"
+    assert results[1]["status"] == "available_places"
 
 
 def test_name_extracted(results: list) -> None:
@@ -97,6 +119,6 @@ def test_multiple_partages_produce_multiple_entries(results: list) -> None:
 
 def test_deduplication_removes_identical_entries(parser: AmapListParser) -> None:
     # Parsing the same HTML twice must yield the same count (no duplicates added)
-    first = parser.parse(FIXTURE)
-    second = parser.parse(FIXTURE)
+    first = parser.parse(load("amap_list.html"))
+    second = parser.parse(load("amap_list.html"))
     assert len(first) == len(second) == 4

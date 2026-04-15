@@ -4,6 +4,11 @@ from typing import Any
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
 
+
+class ParserError(RuntimeError):
+    pass
+
+
 class AmapListParser:
 
     def parse(self, html: str) -> list[dict[str, Any]]:
@@ -12,10 +17,15 @@ class AmapListParser:
         soup = BeautifulSoup(html, "html.parser")
         container = soup.select_one(".liste-fiches.liste-fiches-amaps")
         if not container:
+            if soup.find("body"):
+                raise ParserError(
+                    "HTML response received but '.liste-fiches.liste-fiches-amaps' "
+                    "container not found — the page structure may have changed."
+                )
             return []
 
         for article in container.find_all("article", class_="fiche-amap"):
-            amap_status = "completed" if self.__text(article, "statut-complet") == 'complet' else 'available_places'
+            amap_status = "completed" if self.__text(article, "statut-complet") == "complet" else "available_places"
             amap_name = self.__amap_name(article)  # must come after status check (mutates the tree)
             amap_website = self.__href(article, "amap-link")
 
@@ -34,8 +44,8 @@ class AmapListParser:
                         "phones": self.__links(partage, "contact-tel"),
                     },
                     "place": {
-                        "name": self.__text(partage, "partage-nom"),
-                        "address": self.__text(partage, "partage-adresse", separator=", "),
+                        "name": self.__require(partage, "partage-nom", context=f"partage of '{amap_name}'"),
+                        "address": self.__require(partage, "partage-adresse", context=f"partage of '{amap_name}'", separator=", "),
                         "delivery_time": self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip(),
                     },
                     "comment": self.__text(partage, "partage-commentaire"),
@@ -48,10 +58,22 @@ class AmapListParser:
     def __amap_name(self, article: Tag) -> str:
         found = article.find(class_="amap-nom")
         if not found:
-            return ""
+            raise ParserError(
+                "Required element '.amap-nom' not found in article — "
+                "the page structure may have changed."
+            )
         for span in found.find_all(class_="statut-complet"):
             span.extract()
         return found.get_text(strip=True)
+
+    def __require(self, el: Tag, css_class: str, context: str, separator: str = "") -> str:
+        found = el.find(class_=css_class)
+        if not found:
+            raise ParserError(
+                f"Required element '.{css_class}' not found in {context} — "
+                "the page structure may have changed."
+            )
+        return found.get_text(separator=separator, strip=True)
 
     def __text(self, el: Tag, css_class: str, separator: str = "") -> str:
         found = el.find(class_=css_class)
