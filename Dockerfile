@@ -12,7 +12,7 @@ COPY main.py ./
 COPY tests/ ./tests/
 RUN uv sync --frozen
 
-COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+COPY bin/docker-entrypoint.sh ./bin/
+RUN chmod +x bin/docker-entrypoint.sh
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["./bin/docker-entrypoint.sh"]
