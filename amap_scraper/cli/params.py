@@ -3,9 +3,9 @@ from typing import Optional
 
 import typer
 
-from core.client import Client, ClientError
-from core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
-from cli.output import OutputError, write_output
+from amap_scraper.core.client import Client, ClientError
+from amap_scraper.core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
+from amap_scraper.cli.output import OutputError, write_output
 
 app = typer.Typer(add_completion=False)
 

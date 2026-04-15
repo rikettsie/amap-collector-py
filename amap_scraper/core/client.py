@@ -2,7 +2,7 @@ from typing import Optional, Self
 import requests
 
 import core.validations as validations
-from core.endpoint import AmapList
+from amap_scraper.core.endpoint import AmapList
 
 class ClientError(RuntimeError):
     pass

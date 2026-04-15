@@ -1,5 +1,5 @@
 [project]
-name = "amap-scraper-py"
+name = "amap-scraper"
 version = "0.1.0"
 authors = [
     { name = "Enrico Fusto", email = "enrico.fusto@protonmail.com" }
@@ -12,3 +12,10 @@ dependencies = [
     "requests>=2.33.1",
     "typer>=0.24.1",
 ]
+
+[project.scripts]
+amap_list = "amap_scraper.cli.params:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

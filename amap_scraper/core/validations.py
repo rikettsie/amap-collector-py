@@ -1,4 +1,4 @@
-from core.endpoint import ZipCodeInfo
+from amap_scraper.core.endpoint import ZipCodeInfo
 
 ALLOWED_DEPTS: list[str] = ["75", "77", "78", "91", "92", "93", "94", "95"]
 ALLOWED_RADII: list[str] = ["2", "5", "10", "15", "20"]

@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Any
-from core.parser import AmapListParser
+from amap_scraper.core.parser import AmapListParser
 
 class AmapList:
     BASE_URI: str = "https://amap-idf.org"
