@@ -1,0 +1,14 @@
+[project]
+name = "amap-scraper-py"
+version = "0.1.0"
+authors = [
+    { name = "Enrico Fusto", email = "enrico.fusto@protonmail.com" }
+]
+description = "A simple collector of the french AMAP network in a structured way."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "requests>=2.33.1",
+    "typer>=0.24.1",
+]
