@@ -1,10 +1,10 @@
-FROM python:3.14-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
 RUN pip install uv
 
-COPY pyproject.toml uv.lock README.md ./
+COPY pyproject.toml uv.lock README.md LICENSE ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY amap_collector/ ./amap_collector/
