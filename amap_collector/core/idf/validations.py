@@ -6,19 +6,19 @@ ALLOWED_RADII: list[str] = ["2", "5", "10", "15", "20"]
 DEFAULT_DEPT: str = "75"
 DEFAULT_RADIUS: str = "2"
 
-class ValidationError(RuntimeError):
+class IdfValidationError(RuntimeError):
     pass
 
 def validate_department(department: int|str) -> str:
     dept = str(department)
     if dept not in ALLOWED_DEPTS:
-        raise ValidationError(f"Parameter `department` must belong to {ALLOWED_DEPTS}, but {dept} was given")
+        raise IdfValidationError(f"Parameter `department` must belong to {ALLOWED_DEPTS}, but {dept} was given")
     return dept
     
 def validate_km_radius(km_radius: int|str) -> str:
     km_r = str(km_radius)
     if km_r not in ALLOWED_RADII:
-        raise ValidationError(f"Parameter `km_radius` must belong to {ALLOWED_RADII}, but {km_r} was given")
+        raise IdfValidationError(f"Parameter `km_radius` must belong to {ALLOWED_RADII}, but {km_r} was given")
     return km_r
 
 def validate_zip_code(zip_code: int|str) -> str:
@@ -30,6 +30,6 @@ def validate_zip_code(zip_code: int|str) -> str:
             raise ValueError
         return zc
     except ValueError:
-        raise ValidationError(f"Parameter `zip_code` must be represented by a valid french zip code number, but {zip_code} was given")
+        raise IdfValidationError(f"Parameter `zip_code` must be represented by a valid french zip code number, but {zip_code} was given")
 
 

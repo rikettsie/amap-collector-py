@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 from typing import Any
 from bs4 import BeautifulSoup, Tag
 from bs4.element import NavigableString
@@ -36,19 +37,23 @@ class IdfAmapListParser:
             }
 
             for partage in article.find_all(class_="partage"):
+                delivery_time = self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip()
                 entry = {
                     **base,
+                    "abstract": None,
                     "contact": {
                         "name": self.__contact_name(partage),
                         "emails": self.__links(partage, "contact-email"),
                         "phones": self.__links(partage, "contact-tel"),
                     },
-                    "place": {
-                        "name": self.__text(partage, "partage-nom"),
+                    "delivery": {
+                        "place_name": self.__text(partage, "partage-nom") or None,
                         "address": self.__text(partage, "partage-adresse", separator=", "),
-                        "delivery_time": self.__text(partage, "partage-jour").replace("Jour de partage :", "").strip(),
+                        "days": self.__parse_delivery_time(delivery_time),
                     },
                     "comment": self.__text(partage, "partage-commentaire"),
+                    "products": [],
+                    "farms": [],
                 }
                 hashed = hashlib.sha256(json.dumps(entry, sort_keys=True).encode()).hexdigest()
                 results[hashed] = entry
@@ -91,6 +96,17 @@ class IdfAmapListParser:
             return ""
         href = found.get("href", "")
         return href if isinstance(href, str) else ""
+
+    def __parse_delivery_time(self, text: str) -> list[dict[str, str]]:
+        m = re.match(r'(\w+)\s+(\d+)h(\d+)\s*[-–]\s*(\d+)h(\d+)', text)
+        if not m:
+            return []
+        week_day, open_h, open_m, close_h, close_m = m.groups()
+        return [{
+            'weekDay': week_day,
+            'openHour': f"{open_h.zfill(2)}:{open_m.zfill(2)}:00.000",
+            'closeHour': f"{close_h.zfill(2)}:{close_m.zfill(2)}:00.000",
+        }]
 
     def __contact_name(self, el: Tag) -> str:
         found = el.find(class_="partage-contact")

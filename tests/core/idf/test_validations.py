@@ -4,7 +4,7 @@ from amap_collector.core.idf.validations import (
     validate_department,
     validate_km_radius,
     validate_zip_code,
-    ValidationError,
+    IdfValidationError as ValidationError,
     ALLOWED_DEPTS,
     ALLOWED_RADII,
 )

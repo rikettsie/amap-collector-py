@@ -33,14 +33,14 @@ def test_missing_amap_nom_raises(parser: IdfAmapListParser) -> None:
         parser.parse(load("missing_amap_nom.html"))
 
 
-def test_missing_partage_nom_returns_empty_string(parser: IdfAmapListParser) -> None:
+def test_missing_partage_nom_returns_none(parser: IdfAmapListParser) -> None:
     results = parser.parse(load("missing_partage_nom.html"))
-    assert results[0]["place"]["name"] == ""
+    assert results[0]["delivery"]["place_name"] is None
 
 
 def test_missing_partage_adresse_returns_empty_string(parser: IdfAmapListParser) -> None:
     results = parser.parse(load("missing_partage_adresse.html"))
-    assert results[0]["place"]["address"] == ""
+    assert results[0]["delivery"]["address"] == ""
 
 
 def test_parse_returns_correct_count(results: list) -> None:
@@ -69,19 +69,21 @@ def test_missing_website_is_empty_string(results: list) -> None:
 
 
 def test_address_space_between_street_and_zip(results: list) -> None:
-    assert results[1]["place"]["address"] == "6 rue Fernand Laguide, 91100 CORBEIL-ESSONNES"
+    assert results[1]["delivery"]["address"] == "6 rue Fernand Laguide, 91100 CORBEIL-ESSONNES"
 
 
 def test_address_paris(results: list) -> None:
-    assert results[0]["place"]["address"] == "2 bis rue de l'Ourcq, 75019 PARIS"
+    assert results[0]["delivery"]["address"] == "2 bis rue de l'Ourcq, 75019 PARIS"
 
 
 def test_place_name(results: list) -> None:
-    assert results[0]["place"]["name"] == "La Ferme du Rail"
+    assert results[0]["delivery"]["place_name"] == "La Ferme du Rail"
 
 
-def test_delivery_time_stripped_of_label(results: list) -> None:
-    assert results[0]["place"]["delivery_time"] == "Samedi 11h30-12h30"
+def test_delivery_days_parsed(results: list) -> None:
+    assert results[0]["delivery"]["days"] == [
+        {"weekDay": "Samedi", "openHour": "11:30:00.000", "closeHour": "12:30:00.000"}
+    ]
 
 
 def test_contact_name_stripped_of_label(results: list) -> None:
@@ -113,8 +115,8 @@ def test_multiple_partages_produce_multiple_entries(results: list) -> None:
     # Entries at index 2 and 3 both belong to AMAP Multi-Site
     assert results[2]["name"] == "AMAP Multi-Site"
     assert results[3]["name"] == "AMAP Multi-Site"
-    assert results[2]["place"]["name"] == "Site A"
-    assert results[3]["place"]["name"] == "Site B"
+    assert results[2]["delivery"]["place_name"] == "Site A"
+    assert results[3]["delivery"]["place_name"] == "Site B"
 
 
 def test_deduplication_removes_identical_entries(parser: IdfAmapListParser) -> None:

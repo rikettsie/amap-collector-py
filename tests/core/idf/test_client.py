@@ -2,7 +2,7 @@ from unittest.mock import patch
 import pytest
 import requests
 from amap_collector.core.idf.client import IdfAmapClient, IdfAmapClientError
-from amap_collector.core.idf.validations import ValidationError
+from amap_collector.core.idf.validations import IdfValidationError as ValidationError
 
 
 class TestClientPayload:
