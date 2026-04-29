@@ -6,9 +6,12 @@ from amap_collector.core.router import AmapClientBuilderError
 runner = CliRunner()
 
 
-def _mock_builder(MockBuilder, is_idf: bool = False) -> MagicMock:
+def _mock_builder(
+    MockBuilder, is_idf: bool = False, dept: str = "75", zip_code: str | None = None
+) -> MagicMock:
     instance = MockBuilder.return_value
     instance.is_idf.return_value = is_idf
+    instance.target.return_value = {"dept": dept, "zip_code": zip_code}
     client = MagicMock()
     client.with_department.return_value = client
     client.with_km_radius.return_value = client
@@ -42,7 +45,7 @@ class TestOutputFileValidation:
 class TestParameterForwarding:
     def test_department_forwarded(self) -> None:
         with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
-            client = _mock_builder(MockBuilder)
+            client = _mock_builder(MockBuilder, dept="92")
             runner.invoke(app, ["92"])
         client.with_department.assert_called_once_with("92")
 
@@ -54,8 +57,8 @@ class TestParameterForwarding:
 
     def test_zip_code_forwarded(self) -> None:
         with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
-            client = _mock_builder(MockBuilder, is_idf=True)
-            runner.invoke(app, ["75", "--zip-code", "75019"])
+            client = _mock_builder(MockBuilder, is_idf=True, zip_code="75019")
+            runner.invoke(app, ["75019"])
         client.with_zip_code.assert_called_once_with("75019")
 
     def test_no_zip_code_not_forwarded(self) -> None:

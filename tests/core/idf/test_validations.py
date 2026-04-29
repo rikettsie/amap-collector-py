@@ -46,7 +46,7 @@ class TestValidateKmRadius:
 
 class TestValidateZipCode:
     def test_valid_zip_code(self) -> None:
-        mock_response = {"code": "75019"}
+        mock_response = {"features": [{"properties": {"postcode": "75019"}}]}
         with patch("amap_collector.core.idf.validations.ZipCodeInfo") as MockZip:
             MockZip.return_value.call.return_value = mock_response
             result = validate_zip_code("75019")
@@ -54,7 +54,7 @@ class TestValidateZipCode:
 
     def test_invalid_zip_returns_no_code(self) -> None:
         with patch("amap_collector.core.idf.validations.ZipCodeInfo") as MockZip:
-            MockZip.return_value.call.return_value = {}
+            MockZip.return_value.call.return_value = {"features": []}
             with pytest.raises(ValidationError):
                 validate_zip_code("00000")
 

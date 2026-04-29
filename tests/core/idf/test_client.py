@@ -24,7 +24,7 @@ class TestClientPayload:
 
     def test_payload_with_zip_code(self) -> None:
         with patch("amap_collector.core.idf.validations.ZipCodeInfo") as MockZip:
-            MockZip.return_value.call.return_value = {"code": "75019"}
+            MockZip.return_value.call.return_value = {"features": [{"properties": {"postcode": "75019"}}]}
             client = IdfAmapClient().with_zip_code("75019")
         assert client._IdfAmapClient__payload()["cp"] == "75019"
 

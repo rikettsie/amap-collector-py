@@ -29,7 +29,7 @@ def validate_zip_code(zip_code: int|str) -> str:
         if not zc:
             raise ValueError
         return zc
-    except ValueError:
+    except (ValueError, KeyError, IndexError):
         raise IdfValidationError(f"Parameter `zip_code` must be a valid french zip code number, but {zip_code} was given")
 
 
