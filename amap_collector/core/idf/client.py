@@ -1,20 +1,22 @@
 from typing import Optional, Self
 import requests
 
-import amap_collector.core.validations as validations
-from amap_collector.core.endpoint import AmapList
+import amap_collector.core.idf.validations as validations
+from amap_collector.core.idf.endpoint import IdfAmapList
 
-class AmapClientError(RuntimeError):
+IDF_CLIENT_LABEL: str = 'idf'
+
+class IdfAmapClientError(RuntimeError):
     """Raised when an HTTP error occurs while fetching AMAP data."""
 
 
-class AmapClient:
+class IdfAmapClient:
     """Client for querying the AMAP Île-de-France directory.
 
     Exposes a fluent interface to set search parameters before fetching results.
 
     Example:
-        results = AmapClient().with_department("93").with_km_radius("10").get_amap_list()
+        results = IdfAmapClient().with_department("93").with_km_radius("10").get_amap_list()
     """
 
     def __init__(self) -> None:
@@ -81,9 +83,9 @@ class AmapClient:
             AmapClientError: If the HTTP request fails.
         """
         try:
-            return AmapList().call(self.__payload())
+            return IdfAmapList().call(self.__payload())
         except requests.RequestException as err:
-            raise AmapClientError(err)
+            raise IdfAmapClientError(err)
 
 
     def __payload(self) -> dict[str, str]:

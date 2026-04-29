@@ -3,8 +3,7 @@ from typing import Optional
 
 import typer
 
-from amap_collector.core.client import AmapClient, AmapClientError
-from amap_collector.core.validations import DEFAULT_DEPT, DEFAULT_RADIUS, ValidationError
+from amap_collector.core.router import AmapClientBuilder, AmapClientBuilderError
 from amap_collector.cli.output import OutputError, write_output
 
 app = typer.Typer(add_completion=False)
@@ -12,9 +11,9 @@ app = typer.Typer(add_completion=False)
 
 @app.command()
 def run(
-    department: str = typer.Option(DEFAULT_DEPT, "--department", help="Department code (75, 77, 78, 91, 92, 93, 94, 95)"),
-    km_radius: str = typer.Option(DEFAULT_RADIUS, "--km-radius", help="Search radius in km (2, 5, 10, 15, 20)"),
-    zip_code: Optional[str] = typer.Option(None, "--zip-code", help="French zip code to search around"),
+    department: str = typer.Argument(help="French department code (2 digits)"),
+    km_radius: str = typer.Option(None, "--km-radius", help="Search radius in km (2, 5, 10, 15, 20), only applicable on Île-de-France departments"),
+    zip_code: Optional[str] = typer.Option(None, "--zip-code", help="French zip code (5 digits) to search around, only applicable on Île-de-France departments"),
     output_file: Optional[Path] = typer.Option(None, "--output-file", help="Output file path (.json or .csv)"),
 ) -> None:
     if output_file is not None and output_file.suffix not in (".json", ".csv"):
@@ -22,14 +21,22 @@ def run(
         raise typer.Exit(code=1)
 
     try:
-        client = AmapClient().with_department(department).with_km_radius(km_radius)
+        code = zip_code if zip_code else department
+        client_builder = AmapClientBuilder(code)
+        client = client_builder.get_client()
 
-        if zip_code:
-            client = client.with_zip_code(zip_code)
+        client.with_department(department)
+
+        if client_builder.is_idf():
+            if zip_code:
+                client.with_zip_code(zip_code)
+
+            if km_radius:
+                client.with_km_radius(km_radius)
 
         results = client.get_amap_list()
 
-    except (ValidationError, AmapClientError, OutputError) as e:
+    except (AmapClientBuilderError, OutputError, RuntimeError) as e:
         typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
 

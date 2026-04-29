@@ -9,7 +9,7 @@ class ParserError(RuntimeError):
     pass
 
 
-class AmapListParser:
+class IdfAmapListParser:
 
     def parse(self, html: str) -> list[dict[str, Any]]:
         results: dict[str, dict[str, Any]] = {}

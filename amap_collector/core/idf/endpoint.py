@@ -1,8 +1,8 @@
 import requests
 from typing import Optional, Any
-from amap_collector.core.parser import AmapListParser
+from amap_collector.core.idf.parser import IdfAmapListParser
 
-class AmapList:
+class IdfAmapList:
     BASE_URI: str = "https://amap-idf.org"
     AMAP_LIST_PATH: str = "les-amap/trouver-une-amap-en-idf"
     HEADERS: dict[str, str] = {
@@ -34,7 +34,7 @@ class AmapList:
             ret = session.post(self.__uri, data=data)
             ret.raise_for_status()
 
-        return AmapListParser().parse(ret.text)
+        return IdfAmapListParser().parse(ret.text)
 
 
 class ZipCodeInfo:

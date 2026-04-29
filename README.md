@@ -48,11 +48,11 @@ where `results` is a list of `dict`s like:
 
 ## Cli usage
 
-The cli is built with [Typer](https://typer.tiangolo.com/), you can explore command parameters via the `--help` modifier:
+The cli is built with [Typer](https://typer.tiangolo.com/), you can explore command parameters and options via the `--help` modifier:
 
-`--department` The department zip code (available options: 75, 77, 78, 91, 92, 93, 94, 95)  [default: 75]
+`department` The department code (mandatory).
 
-`--zip-code` The french zip code to search around (when specified, it fully **overrides** the `--department` parameter)
+`--zip-code` The french zip code to search around (when specified, it fully **overrides** the `department` parameter)
 
 `--km-radius` The Search radius in km (available options: 2, 5, 10, 15, 20) [default: 2]
 
@@ -78,10 +78,10 @@ Pass any `amap_collector` option directly after the image name:
 
 ```bash
 # stdout — all AMAPs in dept 93 within 5 km
-docker run --rm amap-collector --department 93 --km-radius 5
+docker run --rm amap-collector 93 --km-radius 5
 
 # save to a JSON file on the host
-docker run --rm -v /tmp:/out amap-collector --department 75 --output-file /out/amaps.json
+docker run --rm -v /tmp:/out amap-collector 75 --output-file /out/amaps.json
 
 # narrow search by zip code
 docker run --rm amap-collector --zip-code 75012

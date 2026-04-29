@@ -1,8 +1,8 @@
 from pathlib import Path
 import pytest
-from amap_collector.core.parser import AmapListParser, ParserError
+from amap_collector.core.idf.parser import IdfAmapListParser, ParserError
 
-FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
+FIXTURES_DIR = Path(__file__).parent.parent.parent / "fixtures" / "idf"
 
 
 def load(name: str) -> str:
@@ -10,35 +10,35 @@ def load(name: str) -> str:
 
 
 @pytest.fixture
-def parser() -> AmapListParser:
-    return AmapListParser()
+def parser() -> IdfAmapListParser:
+    return IdfAmapListParser()
 
 
 @pytest.fixture
-def results(parser: AmapListParser) -> list:
+def results(parser: IdfAmapListParser) -> list:
     return parser.parse(load("amap_list.html"))
 
 
-def test_empty_html_returns_empty_list(parser: AmapListParser) -> None:
+def test_empty_html_returns_empty_list(parser: IdfAmapListParser) -> None:
     assert parser.parse(load("empty.html")) == []
 
 
-def test_missing_container_in_full_page_raises(parser: AmapListParser) -> None:
+def test_missing_container_in_full_page_raises(parser: IdfAmapListParser) -> None:
     with pytest.raises(ParserError, match="liste-fiches"):
         parser.parse(load("no_container.html"))
 
 
-def test_missing_amap_nom_raises(parser: AmapListParser) -> None:
+def test_missing_amap_nom_raises(parser: IdfAmapListParser) -> None:
     with pytest.raises(ParserError, match="amap-nom"):
         parser.parse(load("missing_amap_nom.html"))
 
 
-def test_missing_partage_nom_returns_empty_string(parser: AmapListParser) -> None:
+def test_missing_partage_nom_returns_empty_string(parser: IdfAmapListParser) -> None:
     results = parser.parse(load("missing_partage_nom.html"))
     assert results[0]["place"]["name"] == ""
 
 
-def test_missing_partage_adresse_returns_empty_string(parser: AmapListParser) -> None:
+def test_missing_partage_adresse_returns_empty_string(parser: IdfAmapListParser) -> None:
     results = parser.parse(load("missing_partage_adresse.html"))
     assert results[0]["place"]["address"] == ""
 
@@ -117,7 +117,7 @@ def test_multiple_partages_produce_multiple_entries(results: list) -> None:
     assert results[3]["place"]["name"] == "Site B"
 
 
-def test_deduplication_removes_identical_entries(parser: AmapListParser) -> None:
+def test_deduplication_removes_identical_entries(parser: IdfAmapListParser) -> None:
     # Parsing the same HTML twice must yield the same count (no duplicates added)
     first = parser.parse(load("amap_list.html"))
     second = parser.parse(load("amap_list.html"))
