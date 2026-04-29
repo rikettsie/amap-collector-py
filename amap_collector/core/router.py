@@ -66,7 +66,7 @@ class AmapClientBuilder:
 
     def __validate_code(self, code: str) -> None:
         if not (self.__is_department(code) or self.__is_zipcode(code)):
-            raise AmapClientBuilderError(f"Code must be a department (2 digits) or a zip code of 5 digits, but {dept} was given")
+            raise AmapClientBuilderError(f"Code must be a department (2 digits) or a zip code of 5 digits, but {code} was given")
 
     def __validate_department(self, dept: str) -> None:
         if dept not in allowed_depts():
