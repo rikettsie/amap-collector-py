@@ -11,9 +11,8 @@ app = typer.Typer(add_completion=False)
 
 @app.command()
 def run(
-    department: str = typer.Argument(help="French department code (2 digits)"),
+    area_code: str = typer.Argument(help="French department code (2 digits) or zip code (5 digits); the latter (zip code) is only applicable on Île-de-France departments"),
     km_radius: str = typer.Option(None, "--km-radius", help="Search radius in km (2, 5, 10, 15, 20), only applicable on Île-de-France departments"),
-    zip_code: Optional[str] = typer.Option(None, "--zip-code", help="French zip code (5 digits) to search around, only applicable on Île-de-France departments"),
     output_file: Optional[Path] = typer.Option(None, "--output-file", help="Output file path (.json or .csv)"),
 ) -> None:
     if output_file is not None and output_file.suffix not in (".json", ".csv"):
@@ -21,14 +20,13 @@ def run(
         raise typer.Exit(code=1)
 
     try:
-        code = zip_code if zip_code else department
-        client_builder = AmapClientBuilder(code)
+        client_builder = AmapClientBuilder(area_code)
         client = client_builder.get_client()
 
-        client.with_department(department)
+        client.with_department(client_builder.target()["dept"])
 
         if client_builder.is_idf():
-            if zip_code:
+            if zip_code := client_builder.target()["zip_code"]:
                 client.with_zip_code(zip_code)
 
             if km_radius:

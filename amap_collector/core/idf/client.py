@@ -34,7 +34,7 @@ class IdfAmapClient:
             The client instance for chaining.
 
         Raises:
-            ValidationError: If the department code is not supported.
+            IdfValidationError: If the department code is not supported.
         """
         self.__department = validations.validate_department(department)
         return self
@@ -76,11 +76,11 @@ class IdfAmapClient:
 
         Returns:
             A list of AMAP entries. Each entry is a dict with keys:
-            ``name``, ``status``, ``website``, ``contact``, ``place``,
-            and ``comment``.
+            ``name``, ``status``, ``website``, ``contact``, ``delivery``,
+            ``comment`` and other minor fields.
 
         Raises:
-            AmapClientError: If the HTTP request fails.
+            IdfAmapClientError: If the HTTP request fails.
         """
         try:
             return IdfAmapList().call(self.__payload())

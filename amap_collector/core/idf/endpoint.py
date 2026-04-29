@@ -38,11 +38,11 @@ class IdfAmapList:
 
 
 class ZipCodeInfo:
-    BASE_URI: str = "https://geo.api.gouv.fr/communes"
+    BASE_URI: str = "https://api-adresse.data.gouv.fr"
 
     def call(self, zip_code: str) -> dict[str, Any]:
         try:
-            ret = requests.get(f"{self.BASE_URI}/{zip_code}/?fields=centre&format=json")
+            ret = requests.get(f"{self.BASE_URI}/search/?q={zip_code}&postcode={zip_code}&limit=1")
             ret.raise_for_status()
             return ret.json()
         except requests.RequestException:

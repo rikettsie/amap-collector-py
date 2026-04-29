@@ -2,8 +2,6 @@ import re
 import json
 from typing import Any
 
-CARD_BASE_URI: str = "https://reseau-amap-hn.com"
-
 
 class HnAmapListParser:
 
@@ -58,6 +56,8 @@ class HnAmapListParser:
         ]
         farms = [
             {
+                'id': f.get('id', ''),
+                'slug': f.get('slug', ''),
                 'name': f.get('name', ''),
                 'city': (((f.get('contacts') or {}).get('address') or {}).get('city') or '').strip(),
             }
@@ -145,3 +145,7 @@ class HnAmapDetailParser:
             'phones': [phone] if phone else [],
             'website': website,
         }
+
+
+class HnFarmDetailParser(HnAmapDetailParser):
+    """Farm detail pages share the same RSC contact-block structure as AMAP detail pages."""

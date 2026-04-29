@@ -25,11 +25,11 @@ def validate_zip_code(zip_code: int|str) -> str:
     try:
         zc = str(int(zip_code))
         zc_info = ZipCodeInfo().call(zc)
-        zc = zc_info.get("code")
+        zc = zc_info["features"][0].get("properties", {})["postcode"]
         if not zc:
             raise ValueError
         return zc
     except ValueError:
-        raise IdfValidationError(f"Parameter `zip_code` must be represented by a valid french zip code number, but {zip_code} was given")
+        raise IdfValidationError(f"Parameter `zip_code` must be a valid french zip code number, but {zip_code} was given")
 
 

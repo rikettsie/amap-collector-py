@@ -8,14 +8,14 @@ The client can be imported as a package or launched in the command line via the 
 
 ## Package usage
 
-The typical use case is importing the `AmapClient` in your code and the `AmapClientError` class eventually.
+The typical use case is importing a specific AMAP client (e.g. `IdfAmapClient`, `HnAmapClient`) in your code, and the error class eventually.
 
-An `AmapClient` object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
+An AMAP client object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
 
 ```Python
-from amap_collector.core import AmapClient
+from amap_collector.core.idf import IdfAmapClient
 
-c = AmapClient().with_department(75).with_km_radius(10)
+c = IdfAmapClient().with_department(75).with_km_radius(10)
 results = c.get_amap_list()
 ```
 

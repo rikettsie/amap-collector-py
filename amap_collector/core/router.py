@@ -29,7 +29,7 @@ class AmapClientBuilder:
 
     def __init__(self, code: str) -> None:
         self.__validate_code(code)
-        self.__target_zipcode: Optional[str] = code if self.__is_zipcode(code) else None
+        self.__target_zip_code: Optional[str] = code if self.__is_zipcode(code) else None
 
         dept: str = code[0:2]
         self.__validate_department(dept)
@@ -41,7 +41,7 @@ class AmapClientBuilder:
         return {
             "label": self.__client_label,
             "dept": self.__target_dept,
-            "zipcode": self.__target_zipcode
+            "zip_code": self.__target_zip_code
         }
 
     def get_client(self) -> Any:
