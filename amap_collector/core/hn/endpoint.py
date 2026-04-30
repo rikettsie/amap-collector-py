@@ -26,6 +26,9 @@ class HnAmapList:
 
         while True:
             ret = requests.get(self.__list_uri, params={"page": page}, headers=self.HEADERS)
+
+            if ret.status_code == requests.codes.not_found:
+                break
             ret.raise_for_status()
 
             page_items = amap_list_parser.parse(ret.text)
@@ -105,6 +108,8 @@ class HnFarmList:
 
         while True:
             ret = requests.get(self.__list_uri, params={"page": page}, headers=self.HEADERS)
+            if ret.status_code == requests.codes.not_found:
+                break
             ret.raise_for_status()
 
             page_items = list_parser.parse(ret.text)

@@ -97,7 +97,7 @@ class Ia44AmapDetailParser:
 
             hours = self.__parse_hours(raw)
             if hours and day_name:
-                days.append({'weekDay': day_name, **hours})
+                days.append({'week_day': day_name, **hours})
         return days
 
     def __parse_hours(self, text: str) -> dict[str, str] | None:
@@ -115,8 +115,8 @@ class Ia44AmapDetailParser:
             return None
         oh, om, ch, cm = m.groups()
         return {
-            'openHour': f"{int(oh):02d}:{int(om) if om else 0:02d}:00.000",
-            'closeHour': f"{int(ch):02d}:{int(cm) if cm else 0:02d}:00.000",
+            'open_hour': f"{int(oh):02d}:{int(om) if om else 0:02d}:00.000",
+            'close_hour': f"{int(ch):02d}:{int(cm) if cm else 0:02d}:00.000",
         }
 
     def __parse_emails(self, soup: BeautifulSoup) -> list[str]:

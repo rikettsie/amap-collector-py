@@ -82,7 +82,7 @@ def test_place_name(results: list) -> None:
 
 def test_delivery_days_parsed(results: list) -> None:
     assert results[0]["delivery"]["days"] == [
-        {"weekDay": "Samedi", "openHour": "11:30:00.000", "closeHour": "12:30:00.000"}
+        {"week_day": "Samedi", "open_hour": "11:30:00.000", "close_hour": "12:30:00.000"}
     ]
 
 

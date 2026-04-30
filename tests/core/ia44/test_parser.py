@@ -82,7 +82,7 @@ class TestIa44AmapDetailParser:
 
     def test_days_parsed_format_a(self, detail: dict) -> None:
         assert detail["days"] == [
-            {"weekDay": "Vendredi", "openHour": "18:00:00.000", "closeHour": "19:30:00.000"}
+            {"week_day": "Vendredi", "open_hour": "18:00:00.000", "close_hour": "19:30:00.000"}
         ]
 
     def test_email_extracted(self, detail: dict) -> None:

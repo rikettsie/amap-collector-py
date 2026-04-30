@@ -103,9 +103,9 @@ class IdfAmapListParser:
             return []
         week_day, open_h, open_m, close_h, close_m = m.groups()
         return [{
-            'weekDay': week_day,
-            'openHour': f"{open_h.zfill(2)}:{open_m.zfill(2)}:00.000",
-            'closeHour': f"{close_h.zfill(2)}:{close_m.zfill(2)}:00.000",
+            'week_day': week_day,
+            'open_hour': f"{open_h.zfill(2)}:{open_m.zfill(2)}:00.000",
+            'close_hour': f"{close_h.zfill(2)}:{close_m.zfill(2)}:00.000",
         }]
 
     def __contact_name(self, el: Tag) -> str:

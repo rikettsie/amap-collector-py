@@ -10,7 +10,7 @@ from amap_collector.core.ia44.parser import (
 
 class Ia44AmapList:
     BASE_URI: str = "https://www.amap44.org"
-    LIST_PATH: str = "/?s=&category=258&location=&a=true"
+    LIST_PATH: str = "/?ait-items=amap"
     HEADERS: dict[str, str] = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -66,6 +66,8 @@ class Ia44AmapList:
         while True:
             url = f"{self.BASE_URI}{self.LIST_PATH}&paged={page}"
             ret = requests.get(url, headers=self.HEADERS)
+            if ret.status_code == requests.codes.not_found:
+                break
             ret.raise_for_status()
 
             page_items = parser.parse(ret.text)
@@ -182,6 +184,8 @@ class Ia44FarmList:
         while True:
             url = f"{self.BASE_URI}{self.FARM_LIST_PATH}&paged={page}"
             ret = requests.get(url, headers=self.HEADERS)
+            if ret.status_code == requests.codes.not_found:
+                break
             ret.raise_for_status()
 
             page_items = parser.parse(ret.text)

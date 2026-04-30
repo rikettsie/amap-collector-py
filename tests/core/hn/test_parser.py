@@ -70,7 +70,7 @@ class TestHnAmapListParserResults:
 
     def test_delivery_days_parsed(self, results: list) -> None:
         assert results[0]["delivery"]["days"] == [
-            {"weekDay": "Samedi", "openHour": "10:00:00.000", "closeHour": "11:00:00.000"}
+            {"week_day": "Samedi", "open_hour": "10:00:00.000", "close_hour": "11:00:00.000"}
         ]
 
     def test_empty_delivery_days(self, results: list) -> None:

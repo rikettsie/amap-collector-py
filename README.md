@@ -50,7 +50,9 @@ where `results` is a list of `dict`s like:
 
 The cli is built with [Typer](https://typer.tiangolo.com/), you can explore command parameters and options via the `--help` modifier:
 
-`area_code` A valid french department code or zip code; the latter (zip code) is only valid for Île-de-France
+`area_code` A valid french department code or zip code; the latter (zip code) is applicable to the IDF scraper only
+
+`--farms-only` Collect only farm information (applicable to HN and IA44 scrapers only)
 
 `--km-radius` The Search radius in km (available options: 2, 5, 10, 15, 20) [default: 2]; this options is only valid for Île-de-France
 

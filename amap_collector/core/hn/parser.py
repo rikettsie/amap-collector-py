@@ -42,9 +42,9 @@ class HnAmapListParser:
         delivery = item.get('delivery') or {}
         open_days = [
             {
-                'weekDay': d.get('weekDay', ''),
-                'openHour': d.get('openHour', ''),
-                'closeHour': d.get('closeHour', ''),
+                'week_day': d.get('weekDay', ''),
+                'open_hour': d.get('openHour', ''),
+                'close_hour': d.get('closeHour', ''),
             }
             for d in (delivery.get('openDays') or [])
             if isinstance(d, dict)
