@@ -2,7 +2,7 @@ from typing import Optional, Self
 import requests
 
 import amap_collector.core.ia44.validations as validations
-from amap_collector.core.ia44.endpoint import Ia44AmapList
+from amap_collector.core.ia44.endpoint import Ia44AmapList, Ia44FarmList
 
 IA44_CLIENT_LABEL: str = 'ia44'
 
@@ -23,5 +23,11 @@ class Ia44AmapClient:
     def get_amap_list(self) -> list[dict]:
         try:
             return Ia44AmapList().call()
+        except requests.RequestException as err:
+            raise Ia44AmapClientError(err)
+
+    def get_farm_list(self) -> list[dict]:
+        try:
+            return Ia44FarmList().call()
         except requests.RequestException as err:
             raise Ia44AmapClientError(err)

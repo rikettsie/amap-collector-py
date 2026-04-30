@@ -57,9 +57,15 @@ class AmapClientBuilder:
         else:
             return WholeAmapClient()
 
-    def is_idf(self) -> bool:
+    def supports_farm_list(self) -> bool:
+        return self.__client_label in (HN_CLIENT_LABEL, IA44_CLIENT_LABEL)
+
+    def supports_km_radius(self) -> bool:
         return self.__client_label == IDF_CLIENT_LABEL
 
+    def supports_zip_code(self) -> bool:
+        return self.__client_label == IDF_CLIENT_LABEL
+    
     def __region_client_mapper(self) -> str:
         if self.__target_dept in IDF_DEPTS:
             return IDF_CLIENT_LABEL

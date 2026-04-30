@@ -89,8 +89,9 @@ class HnAmapListParser:
             (addr.get('street') or '').strip(),
             (addr.get('zipcode') or '').strip(),
             (addr.get('city') or '').strip(),
+            (addr.get('country') or '').strip(),
         ]
-        return ', '.join(p for p in parts if p)
+        return " ".join(parts).strip()
 
 
 class HnAmapDetailParser:
@@ -149,3 +150,64 @@ class HnAmapDetailParser:
 
 class HnFarmDetailParser(HnAmapDetailParser):
     """Farm detail pages share the same RSC contact-block structure as AMAP detail pages."""
+
+
+class HnFarmListParser:
+
+    def parse(self, html: str) -> list[dict[str, Any]]:
+        scripts = re.findall(r'self\.__next_f\.push\(\[1,(.*?)\]\s*\)', html, re.DOTALL)
+        if not scripts:
+            return []
+
+        inner = json.loads(max(scripts, key=len))
+
+        idx = inner.find('"farms":[')
+        if idx == -1 or inner[idx - 1] != '{':
+            return []
+
+        m = re.search(r'"farms":(\[.*)', inner[idx:], re.DOTALL)
+        if not m:
+            return []
+
+        arr_str = self.__extract_array(m.group(1))
+        arr_str = re.sub(r'"\$[^"]*"', 'null', arr_str)
+
+        raw: list[Any] = json.loads(arr_str)
+        return [self.__normalize(f) for f in raw if isinstance(f, dict) and f.get('__typename') == 'Farm']
+
+    def __extract_array(self, s: str) -> str:
+        depth = 0
+        for i, c in enumerate(s):
+            if c == '[':
+                depth += 1
+            elif c == ']':
+                depth -= 1
+                if depth == 0:
+                    return s[:i + 1]
+        return s
+
+    def __normalize(self, farm: dict[str, Any]) -> dict[str, Any]:
+        addr = ((farm.get('contacts') or {}).get('address') or {})
+        products = [
+            {'name': p.get('name', ''), 'category': p.get('category', '')}
+            for p in (farm.get('products') or [])
+            if isinstance(p, dict) and p.get('__typename') == 'Product'
+        ]
+        return {
+            'id': (farm.get('id') or ''),
+            'slug': (farm.get('slug') or ''),
+            'name': (farm.get('name') or ''),
+            'address': self.__format_address(addr),
+            'city': (addr.get('city') or '').strip(),
+            'products': products,
+        }
+    
+    def __format_address(self, addr: dict[str, Any]) -> str:
+        parts = [
+            (addr.get('name') or '').strip(),
+            (addr.get('street') or '').strip(),
+            (addr.get('zipcode') or '').strip(),
+            (addr.get('city') or '').strip(),
+            (addr.get('country') or '').strip(),
+        ]
+        return " ".join(parts).strip()

@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 import pytest
 import requests
-from amap_collector.core.ia44.endpoint import Ia44AmapList
+from amap_collector.core.ia44.endpoint import Ia44AmapList, Ia44FarmList
 
 _EMPTY_DETAIL: dict = {
     'abstract': None, 'address': '', 'days': [],
@@ -152,3 +152,83 @@ class TestIa44AmapList:
             mock_get.return_value.raise_for_status.side_effect = requests.HTTPError()
             with pytest.raises(requests.HTTPError):
                 Ia44AmapList().call()
+
+
+def _farm_card(slug: str, name: str = "Ferme Test") -> dict:
+    return {
+        'slug': slug,
+        'name': name,
+        'abstract': None,
+        'address': '5 route des Champs, 44000 NANTES',
+        'website': '',
+        'category_hrefs': ['?ait-items=producteur'],
+    }
+
+
+_EMPTY_FARM_DETAIL: dict = {
+    'name': '', 'address': '', 'city': '', 'emails': [], 'website': '', 'protocols': {},
+}
+
+
+def _patch_farm_list(list_side_effects, farm_detail_result=None):
+    list_mock = MagicMock()
+    list_mock.parse.side_effect = list_side_effects
+
+    detail_mock = MagicMock()
+    detail_mock.parse.return_value = farm_detail_result or _EMPTY_FARM_DETAIL.copy()
+
+    return (
+        patch("amap_collector.core.ia44.endpoint.requests.get"),
+        patch("amap_collector.core.ia44.endpoint.Ia44AmapListParser", return_value=list_mock),
+        patch("amap_collector.core.ia44.endpoint.Ia44FarmerDetailParser", return_value=detail_mock),
+    )
+
+
+class TestIa44FarmList:
+    def test_returns_empty_when_first_page_is_empty(self) -> None:
+        p1, p2, p3 = _patch_farm_list([[]])
+        with p1, p2, p3:
+            result = Ia44FarmList().call()
+        assert result == []
+
+    def test_pagination_stops_when_all_slugs_seen(self) -> None:
+        card = _farm_card("farm-01")
+        p1, p2, p3 = _patch_farm_list([[card], [card]])
+        with p1, p2 as MockList, p3:
+            result = Ia44FarmList().call()
+        assert MockList.return_value.parse.call_count == 2
+        assert len(result) == 1
+
+    def test_slug_becomes_id(self) -> None:
+        card = _farm_card("farm-01")
+        p1, p2, p3 = _patch_farm_list([[card], [card]])
+        with p1, p2, p3:
+            result = Ia44FarmList().call()
+        assert result[0]["id"] == "farm-01"
+        assert "slug" not in result[0]
+
+    def test_detail_enriches_result(self) -> None:
+        card = _farm_card("farm-01", name="Ferme A")
+        detail = {**_EMPTY_FARM_DETAIL, 'city': 'NANTES', 'emails': ['f@test.example'], 'website': 'https://ferme.example'}
+        p1, p2, p3 = _patch_farm_list([[card], [card]], farm_detail_result=detail)
+        with p1, p2, p3:
+            result = Ia44FarmList().call()
+        assert result[0]["city"] == "NANTES"
+        assert result[0]["contact"]["emails"] == ["f@test.example"]
+        assert result[0]["website"] == "https://ferme.example"
+
+    def test_protocols_from_detail(self) -> None:
+        card = _farm_card("farm-01")
+        detail = {**_EMPTY_FARM_DETAIL, 'protocols': {'ab_certification': True}}
+        p1, p2, p3 = _patch_farm_list([[card], [card]], farm_detail_result=detail)
+        with p1, p2, p3:
+            result = Ia44FarmList().call()
+        assert result[0]["protocols"] == {'ab_certification': True}
+
+    def test_raises_on_http_error(self) -> None:
+        with patch("amap_collector.core.ia44.endpoint.requests.get") as mock_get, \
+             patch("amap_collector.core.ia44.endpoint.Ia44AmapListParser"), \
+             patch("amap_collector.core.ia44.endpoint.Ia44FarmerDetailParser"):
+            mock_get.return_value.raise_for_status.side_effect = requests.HTTPError()
+            with pytest.raises(requests.HTTPError):
+                Ia44FarmList().call()

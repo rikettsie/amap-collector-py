@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from amap_collector.core.hn.parser import HnAmapListParser, HnAmapDetailParser, HnFarmDetailParser
+from amap_collector.core.hn.parser import HnAmapListParser, HnAmapDetailParser, HnFarmDetailParser, HnFarmListParser
 
 FIXTURES_DIR = Path(__file__).parent.parent.parent / "fixtures" / "hn"
 
@@ -63,7 +63,7 @@ class TestHnAmapListParserResults:
         assert results[0]["comment"] is None
 
     def test_delivery_address_formatted(self, results: list) -> None:
-        assert results[0]["delivery"]["address"] == "12 rue de la Paix, 76000, ROUEN"
+        assert results[0]["delivery"]["address"] == "12 rue de la Paix 76000 ROUEN"
 
     def test_delivery_place_name_is_none(self, results: list) -> None:
         assert results[0]["delivery"]["place_name"] is None
@@ -80,7 +80,7 @@ class TestHnAmapListParserResults:
         assert results[0]["delivery"]["basket_count"] == 20
 
     def test_contact_address_formatted(self, results: list) -> None:
-        assert results[0]["contact_address"] == "5 av Victor Hugo, 76000, ROUEN"
+        assert results[0]["contact_address"] == "5 av Victor Hugo 76000 ROUEN"
 
     def test_products_parsed(self, results: list) -> None:
         assert results[0]["products"] == [{"name": "Légumes", "category": "Maraîchage"}]
@@ -126,3 +126,34 @@ class TestHnFarmDetailParser:
     def test_no_contact_returns_empty(self) -> None:
         parser = HnFarmDetailParser()
         assert parser.parse(load("no_contact.html")) == {}
+
+
+class TestHnFarmListParser:
+    def test_no_scripts_returns_empty(self) -> None:
+        assert HnFarmListParser().parse(load("empty.html")) == []
+
+    def test_no_farms_key_returns_empty(self) -> None:
+        assert HnFarmListParser().parse(load("no_amaps.html")) == []
+
+    def test_amap_list_page_not_mistaken_for_farm_list(self) -> None:
+        assert HnFarmListParser().parse(load("amap_list.html")) == []
+
+    def test_parse_returns_correct_count(self) -> None:
+        result = HnFarmListParser().parse(load("farm_list.html"))
+        assert len(result) == 2
+
+    def test_id_extracted(self) -> None:
+        result = HnFarmListParser().parse(load("farm_list.html"))
+        assert result[0]["id"] == "farm-1"
+
+    def test_slug_extracted(self) -> None:
+        result = HnFarmListParser().parse(load("farm_list.html"))
+        assert result[0]["slug"] == "ferme-test-1"
+
+    def test_name_extracted(self) -> None:
+        result = HnFarmListParser().parse(load("farm_list.html"))
+        assert result[0]["name"] == "Ferme Test 1"
+
+    def test_city_extracted(self) -> None:
+        result = HnFarmListParser().parse(load("farm_list.html"))
+        assert result[0]["city"] == "Rouen"

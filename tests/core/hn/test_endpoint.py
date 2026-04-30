@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 import pytest
 import requests
-from amap_collector.core.hn.endpoint import HnAmapList
+from amap_collector.core.hn.endpoint import HnAmapList, HnFarmList
 
 
 def _list_item(id: str, dept: str, slug: str = "s", farms: list | None = None) -> dict:
@@ -106,3 +106,68 @@ class TestHnAmapList:
             mock_get.return_value.raise_for_status.side_effect = requests.HTTPError()
             with pytest.raises(requests.HTTPError):
                 HnAmapList().call({"department": "76"})
+
+
+def _farm_list_item(id: str, slug: str = "s") -> dict:
+    return {"id": id, "slug": slug, "name": f"Ferme {id}", "city": "Rouen"}
+
+
+def _patch_farm_list(list_items_per_page, detail_result=None):
+    list_mock = MagicMock()
+    list_mock.parse.side_effect = list_items_per_page
+
+    detail_mock = MagicMock()
+    detail_mock.parse.return_value = detail_result or {}
+
+    return (
+        patch("amap_collector.core.hn.endpoint.requests.get"),
+        patch("amap_collector.core.hn.endpoint.HnFarmListParser", return_value=list_mock),
+        patch("amap_collector.core.hn.endpoint.HnFarmDetailParser", return_value=detail_mock),
+    )
+
+
+class TestHnFarmList:
+    def test_returns_empty_when_first_page_is_empty(self) -> None:
+        p1, p2, p3 = _patch_farm_list([[]])
+        with p1, p2, p3:
+            result = HnFarmList().call()
+        assert result == []
+
+    def test_pagination_stops_when_all_ids_seen(self) -> None:
+        farm = _farm_list_item("1", "slug-1")
+        p1, p2, p3 = _patch_farm_list([[farm], [farm]])
+        with p1, p2 as MockList, p3:
+            result = HnFarmList().call()
+        assert MockList.return_value.parse.call_count == 2
+        assert len(result) == 1
+
+    def test_slug_removed_from_result(self) -> None:
+        farm = _farm_list_item("1", "slug-1")
+        p1, p2, p3 = _patch_farm_list([[farm], [farm]])
+        with p1, p2, p3:
+            result = HnFarmList().call()
+        assert "slug" not in result[0]
+
+    def test_contact_from_detail(self) -> None:
+        farm = _farm_list_item("1", "slug-1")
+        detail = {"name": "Fermier", "emails": ["f@test.example"], "phones": ["01 00 00 00 00"], "website": "https://ferme.example"}
+        p1, p2, p3 = _patch_farm_list([[farm], [farm]], detail_result=detail)
+        with p1, p2, p3:
+            result = HnFarmList().call()
+        assert result[0]["contact"] == {"name": "Fermier", "emails": ["f@test.example"], "phones": ["01 00 00 00 00"]}
+        assert result[0]["website"] == "https://ferme.example"
+
+    def test_protocols_always_empty(self) -> None:
+        farm = _farm_list_item("1", "slug-1")
+        p1, p2, p3 = _patch_farm_list([[farm], [farm]])
+        with p1, p2, p3:
+            result = HnFarmList().call()
+        assert result[0]["protocols"] == {}
+
+    def test_raises_on_http_error(self) -> None:
+        with patch("amap_collector.core.hn.endpoint.requests.get") as mock_get, \
+             patch("amap_collector.core.hn.endpoint.HnFarmListParser"), \
+             patch("amap_collector.core.hn.endpoint.HnFarmDetailParser"):
+            mock_get.return_value.raise_for_status.side_effect = requests.HTTPError()
+            with pytest.raises(requests.HTTPError):
+                HnFarmList().call()

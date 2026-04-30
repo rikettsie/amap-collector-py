@@ -38,3 +38,18 @@ class TestClientGetAmapList:
     def test_chaining_returns_self(self) -> None:
         client = Ia44AmapClient()
         assert client.with_department("44") is client
+
+
+class TestClientGetFarmList:
+    def test_returns_results(self) -> None:
+        expected = [{"name": "Ferme Test"}]
+        with patch("amap_collector.core.ia44.client.Ia44FarmList") as MockFarmList:
+            MockFarmList.return_value.call.return_value = expected
+            result = Ia44AmapClient().get_farm_list()
+        assert result == expected
+
+    def test_wraps_request_exception_as_client_error(self) -> None:
+        with patch("amap_collector.core.ia44.client.Ia44FarmList") as MockFarmList:
+            MockFarmList.return_value.call.side_effect = requests.RequestException("timeout")
+            with pytest.raises(Ia44AmapClientError):
+                Ia44AmapClient().get_farm_list()

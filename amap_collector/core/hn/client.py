@@ -2,7 +2,7 @@ from typing import Optional, Self
 import requests
 
 import amap_collector.core.hn.validations as validations
-from amap_collector.core.hn.endpoint import HnAmapList
+from amap_collector.core.hn.endpoint import HnAmapList, HnFarmList
 
 HN_CLIENT_LABEL: str = 'hn'
 
@@ -53,6 +53,12 @@ class HnAmapClient:
         except requests.RequestException as err:
             raise HnAmapClientError(err)
 
+
+    def get_farm_list(self) -> list[dict]:
+        try:
+            return HnFarmList().call()
+        except requests.RequestException as err:
+            raise HnAmapClientError(err)
 
     def __payload(self) -> dict[str, Optional[str]]:
         return {"department": self.__department}

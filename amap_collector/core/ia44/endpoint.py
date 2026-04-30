@@ -138,3 +138,65 @@ class Ia44AmapList:
             })
 
         return farms
+
+
+class Ia44FarmList:
+    BASE_URI: str = "https://www.amap44.org"
+    FARM_LIST_PATH: str = "/?ait-items=paysan"
+    HEADERS: dict[str, str] = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+    }
+
+    def call(self) -> list[dict[str, Any]]:
+        list_parser = Ia44AmapListParser()
+        detail_parser = Ia44FarmerDetailParser()
+
+        cards = self.__fetch_all_farms(list_parser)
+
+        results: list[dict[str, Any]] = []
+        for card in cards:
+            slug = card['slug']
+            detail = self.__fetch_detail(slug, detail_parser)
+            results.append({
+                'id': slug,
+                'name': card.get('name') or detail.get('name', ''),
+                'city': detail.get('city', ''),
+                'website': detail.get('website', '') or card.get('website', ''),
+                'contact': {
+                    'name': '',
+                    'emails': detail.get('emails', []),
+                    'phones': [],
+                },
+                'protocols': detail.get('protocols', {}),
+            })
+
+        return results
+
+    def __fetch_all_farms(self, parser: Ia44AmapListParser) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
+        seen_slugs: set[str] = set()
+        page = 1
+
+        while True:
+            url = f"{self.BASE_URI}{self.FARM_LIST_PATH}&paged={page}"
+            ret = requests.get(url, headers=self.HEADERS)
+            ret.raise_for_status()
+
+            page_items = parser.parse(ret.text)
+            new_items = [i for i in page_items if i['slug'] and i['slug'] not in seen_slugs]
+            if not new_items:
+                break
+
+            seen_slugs.update(i['slug'] for i in new_items)
+            results.extend(new_items)
+            page += 1
+
+        return results
+
+    def __fetch_detail(self, slug: str, parser: Ia44FarmerDetailParser) -> dict[str, Any]:
+        url = f"{self.BASE_URI}/?ait-item={slug}"
+        ret = requests.get(url, headers=self.HEADERS)
+        ret.raise_for_status()
+        return parser.parse(ret.text)
