@@ -1,6 +1,13 @@
 # AMAP collector
 
-This is a simple information collector of the french AMAP  Île-de-France network. It scrapes the [AMAP Île-de-France website](https://amap-idf.org/les-amap/trouver-une-amap-en-idf) and returns a structured list of objects.
+This scraper collects the fragmented information of the french AMAP network from several web sources: 
+
+- [AMAP Île-de-France](https://amap-idf.org);
+- [AMAP Haute-Normandie](https://reseau-amap-hn.com);
+- [Inter AMAP 44 (Nantes et Loire-Atlantique)](https://www.amap44.org);
+- [AMAP for the rest of France](https://www.avenir-bio.fr);
+
+It returns the targeted information in JSON or CSV formats.
 
 # Usage
 
@@ -8,9 +15,9 @@ The client can be imported as a package or launched in the command line via the 
 
 ## Package usage
 
-The typical use case is importing a specific AMAP client (e.g. `IdfAmapClient`, `HnAmapClient`) in your code, and the error class eventually.
+The typical use case is importing a specific AMAP client (e.g. `IdfAmapClient`, `HnAmapClient`, etc) in your code, and its error class eventually.
 
-An AMAP client object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
+The AMAP client object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
 
 ```Python
 from amap_collector.core.idf import IdfAmapClient
