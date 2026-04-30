@@ -112,8 +112,14 @@ docker run --rm amap-collector 93 --km-radius 5
 # save to a JSON file on the host
 docker run --rm -v /tmp:/out amap-collector 75 --output-file /out/amaps.json
 
-# narrow search by zip code
+# narrow collection by zip code
 docker run --rm amap-collector 75012
+
+# collection of farms only, without their AMAPS
+docker run --rm amap-collector 76 --farms-only
+
+# concurrent collection with multiple departments
+docker run --rm amap-collector 75,18,27
 ```
 
 ## Run tests
