@@ -60,6 +60,7 @@ class HnAmapList:
                     'emails': farm_detail.get('emails', []),
                     'phones': farm_detail.get('phones', []),
                 }
+                farm['protocols'] = {}
 
         return results
 

@@ -3,9 +3,12 @@ from typing import Optional, Any
 
 from amap_collector.core.idf.validations import ALLOWED_DEPTS as IDF_DEPTS
 from amap_collector.core.hn.validations import ALLOWED_DEPTS as HN_DEPTS
+from amap_collector.core.ia44.validations import ALLOWED_DEPTS as IA44_DEPTS
 from amap_collector.core.idf.client import IdfAmapClient, IDF_CLIENT_LABEL
 from amap_collector.core.hn.client import HnAmapClient, HN_CLIENT_LABEL
+from amap_collector.core.ia44.client import Ia44AmapClient, IA44_CLIENT_LABEL
 from amap_collector.core.whole.client import WholeAmapClient, WHOLE_CLIENT_LABEL
+
 
 @cache
 def allowed_depts() -> list[str]:
@@ -49,6 +52,8 @@ class AmapClientBuilder:
             return IdfAmapClient()
         elif self.__client_label == HN_CLIENT_LABEL:
             return HnAmapClient()
+        elif self.__client_label == IA44_CLIENT_LABEL:
+            return Ia44AmapClient()
         else:
             return WholeAmapClient()
 
@@ -60,21 +65,23 @@ class AmapClientBuilder:
             return IDF_CLIENT_LABEL
         elif self.__target_dept in HN_DEPTS:
             return HN_CLIENT_LABEL
+        elif self.__target_dept in IA44_DEPTS:
+            return IA44_CLIENT_LABEL
         else:
             return WHOLE_CLIENT_LABEL
 
-
     def __validate_code(self, code: str) -> None:
         if not (self.__is_department(code) or self.__is_zipcode(code)):
-            raise AmapClientBuilderError(f"Code must be a department (2 digits) or a zip code of 5 digits, but {code} was given")
+            raise AmapClientBuilderError(
+                f"Code must be a department (2 digits) or a zip code of 5 digits, but {code} was given"
+            )
 
     def __validate_department(self, dept: str) -> None:
         if dept not in allowed_depts():
             raise AmapClientBuilderError(f"Allowed departments are {allowed_depts()}, but {dept} was given")
-        
+
     def __is_zipcode(self, code: str) -> bool:
         return len(code) == 5
 
     def __is_department(self, code: str) -> bool:
         return len(code) == 2
-    

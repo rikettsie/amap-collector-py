@@ -96,6 +96,7 @@ class TestHnAmapList:
         f = result[0]["farms"][0]
         assert f["website"] == "https://farm.fr"
         assert f["contact"] == {"name": "Fermier", "emails": ["f@farm.fr"], "phones": []}
+        assert f["protocols"] == {}
 
     def test_raises_on_http_error(self) -> None:
         with patch("amap_collector.core.hn.endpoint.requests.get") as mock_get, \
