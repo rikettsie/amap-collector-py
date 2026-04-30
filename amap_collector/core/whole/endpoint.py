@@ -42,7 +42,6 @@ class WholeAmapList:
                 'name': item['name'],
                 'status': None,
                 'abstract': None,
-                'contact_address': '',
                 'comment': item.get('distribution') or None,
                 'products': [{'name': p, 'category': ''} for p in item.get('products', [])],
                 'delivery': {

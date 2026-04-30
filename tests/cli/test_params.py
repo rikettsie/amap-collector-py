@@ -5,6 +5,8 @@ from amap_collector.core.router import AmapClientBuilderError
 
 runner = CliRunner()
 
+_PATCH = "amap_collector.core.collector.AmapClientBuilder"
+
 
 def _mock_builder(
     MockBuilder,
@@ -37,14 +39,14 @@ class TestOutputFileValidation:
 
     def test_valid_json_extension_accepted(self, tmp_path) -> None:
         out = tmp_path / "result.json"
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             _mock_builder(MockBuilder)
             result = runner.invoke(app, ["75", "--output-file", str(out)])
         assert result.exit_code == 0
 
     def test_valid_csv_extension_accepted(self, tmp_path) -> None:
         out = tmp_path / "result.csv"
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             _mock_builder(MockBuilder)
             result = runner.invoke(app, ["75", "--output-file", str(out)])
         assert result.exit_code == 0
@@ -52,39 +54,40 @@ class TestOutputFileValidation:
 
 class TestParameterForwarding:
     def test_department_forwarded(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder, dept="92")
             runner.invoke(app, ["92"])
         client.with_department.assert_called_once_with("92")
 
     def test_km_radius_forwarded_when_supported(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder, supports_km_radius=True)
             runner.invoke(app, ["75", "--km-radius", "10"])
         client.with_km_radius.assert_called_once_with("10")
 
-    def test_km_radius_not_supported_exits_with_1(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
-            _mock_builder(MockBuilder, supports_km_radius=False)
+    def test_km_radius_not_supported_ignored(self) -> None:
+        with patch(_PATCH) as MockBuilder:
+            client = _mock_builder(MockBuilder, supports_km_radius=False)
             result = runner.invoke(app, ["76", "--km-radius", "10"])
-        assert result.exit_code == 1
-        assert "not supported" in result.output
+        assert result.exit_code == 0
+        client.with_km_radius.assert_not_called()
+        client.get_amap_list.assert_called_once()
 
     def test_zip_code_forwarded_when_supported(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder, zip_code="75019", supports_zip_code=True)
             runner.invoke(app, ["75019"])
         client.with_zip_code.assert_called_once_with("75019")
 
     def test_zip_code_not_supported_exits_with_1(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             _mock_builder(MockBuilder, zip_code="76000", supports_zip_code=False)
             result = runner.invoke(app, ["76000"])
         assert result.exit_code == 1
         assert "not supported" in result.output
 
     def test_no_zip_code_not_forwarded(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder)
             runner.invoke(app, ["75"])
         client.with_zip_code.assert_not_called()
@@ -92,21 +95,21 @@ class TestParameterForwarding:
 
 class TestFarmsOnly:
     def test_farms_only_calls_get_farm_list(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder, dept="76", supports_farm_list=True)
             runner.invoke(app, ["76", "--farms-only"])
         client.get_farm_list.assert_called_once()
         client.get_amap_list.assert_not_called()
 
     def test_farms_only_not_supported_exits_with_1(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             _mock_builder(MockBuilder, supports_farm_list=False)
             result = runner.invoke(app, ["75", "--farms-only"])
         assert result.exit_code == 1
         assert "not supported" in result.output
 
     def test_without_farms_only_calls_get_amap_list(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder)
             runner.invoke(app, ["75"])
         client.get_amap_list.assert_called_once()
@@ -115,13 +118,13 @@ class TestFarmsOnly:
 
 class TestErrorHandling:
     def test_invalid_department_exits_with_1(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             MockBuilder.side_effect = AmapClientBuilderError("invalid dept")
             result = runner.invoke(app, ["02"])
         assert result.exit_code == 1
 
     def test_client_error_exits_with_1(self) -> None:
-        with patch("amap_collector.cli.params.AmapClientBuilder") as MockBuilder:
+        with patch(_PATCH) as MockBuilder:
             client = _mock_builder(MockBuilder)
             client.get_amap_list.side_effect = RuntimeError("network error")
             result = runner.invoke(app, ["75"])

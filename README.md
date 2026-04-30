@@ -19,7 +19,7 @@ The typical use case is importing a specific AMAP client (e.g. `IdfAmapClient`, 
 
 The AMAP client object exposes a fluent interface to easily set the target parameters. Here below an example of integration to fetch results around the 75th department (Paris area) over 10 km radius:
 
-```Python
+```python
 from amap_collector.core.idf import IdfAmapClient
 
 c = IdfAmapClient().with_department(75).with_km_radius(10)
@@ -52,6 +52,28 @@ where `results` is a list of `dict`s like:
   "comment": "Venez nombreux"
 }
 ```
+
+### Concurrent scraping
+
+You can also run the scraper concurrently, on multiple area codes:
+
+```python
+import asyncio
+from amap_collector.core.collector import collect
+
+results = asyncio.run(collect(["75", "19", "80"], max_concurrent=4))
+```
+
+Or inside an async function:
+
+```python
+from amap_collector.core.collector import collect
+
+async def main():
+    results = await collect(["75", "19", "80"], max_concurrent=4)
+```
+
+**Note:** `max_concurrent` has a default equal to `8`.
 
 ## Cli usage
 

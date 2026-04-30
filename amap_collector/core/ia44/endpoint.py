@@ -41,7 +41,6 @@ class Ia44AmapList:
                 'days': detail.get('days', []),
                 'basket_count': None,
             }
-            item['contact_address'] = detail.get('address') or ''
             item.pop('address', None)
             item['comment'] = None
             item['products'] = [{'name': p, 'category': ''} for p in products_raw]

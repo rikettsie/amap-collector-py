@@ -1,9 +1,10 @@
+import asyncio
 from pathlib import Path
 from typing import Optional
-
 import typer
 
-from amap_collector.core.router import AmapClientBuilder, AmapClientBuilderError
+from amap_collector.core.router import AmapClientBuilderError
+from amap_collector.core.collector import collect, CollectionError, MAX_CONCURRENT
 from amap_collector.cli.output import OutputError, write_output
 
 app = typer.Typer(add_completion=False)
@@ -15,39 +16,16 @@ def run(
     km_radius: str = typer.Option(None, "--km-radius", help="Search radius in km (2, 5, 10, 15, 20), only applicable to Île-de-France departments"),
     output_file: Optional[Path] = typer.Option(None, "--output-file", help="Output file path (.json or .csv)"),
     farms_only: bool = typer.Option(False, "--farms-only", help="Collect only farm information (applicable to Haute-Normandie and Loire-Atlantique only)"),
+    max_concurrent: int = typer.Option(MAX_CONCURRENT, "--max-concurrent", help="Maximum number of departments collected in parallel"),
 ) -> None:
     if output_file is not None and output_file.suffix not in (".json", ".csv"):
         typer.echo("Error: --output-file must have a .json or .csv extension", err=True)
         raise typer.Exit(code=1)
 
+    codes = list({c.strip() for c in area_code.split(',')})
     try:
-        client_builder = AmapClientBuilder(area_code)
-        zip_code: Optional[str] = client_builder.target()["zip_code"]
-
-        client = client_builder.get_client()
-
-        if farms_only and not client_builder.supports_farm_list():
-            typer.echo("Error: --farms-only is not supported for this region", err=True)
-            raise typer.Exit(code=1)
-        
-        if km_radius:
-            if client_builder.supports_km_radius():
-                client.with_km_radius(km_radius)
-            else:
-                typer.echo("Error: --km_radius is not supported for this region", err=True)
-                raise typer.Exit(code=1)
-        
-        if zip_code:
-            if client_builder.supports_zip_code():
-                client.with_zip_code(zip_code)
-            else:
-                typer.echo("Error: zip_code scraping is not supported for this region", err=True)
-                raise typer.Exit(code=1)
-        
-        client.with_department(client_builder.target()["dept"])
-        results = client.get_farm_list() if farms_only else client.get_amap_list()
-
-    except (AmapClientBuilderError, OutputError, RuntimeError) as e:
+        results = asyncio.run(collect(codes, km_radius, farms_only, max_concurrent))
+    except (AmapClientBuilderError, CollectionError, OutputError, RuntimeError) as e:
         typer.echo(e, err=True)
         raise typer.Exit(code=1)
 
