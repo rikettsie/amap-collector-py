@@ -1,9 +1,9 @@
 import asyncio
 import logging
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, MagicMock
 import pytest
 
-from amap_collector.core.collector import collect, _collect_one, CollectionError, MAX_CONCURRENT
+from amap_collector.core.collector import collect, _collect_one, CollectionError
 
 _PATCH = "amap_collector.core.collector.AmapClientBuilder"
 

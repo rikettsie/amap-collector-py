@@ -2,7 +2,7 @@ import asyncio
 import logging
 from typing import Any, Optional
 
-from amap_collector.core.router import AmapClientBuilder, AmapClientBuilderError
+from amap_collector.core.router import AmapClientBuilder
 
 logger = logging.getLogger(__name__)
 
