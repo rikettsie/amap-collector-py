@@ -1,5 +1,9 @@
 # AMAP collector
 
+[![CI](https://github.com/rikettsie/amap-collector-py/actions/workflows/ci.yml/badge.svg)](https://github.com/rikettsie/amap-collector-py/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/amap-collector)](https://pypi.org/project/amap-collector/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/rikettsie/amap-collector-py/blob/main/LICENSE)
+
 This scraper collects the fragmented information of the french AMAP network from several web sources: 
 
 - [AMAP Île-de-France](https://amap-idf.org);
