@@ -33,9 +33,9 @@ class TestAmapList:
         mock_session.post.return_value = mock_response
 
         amap = IdfAmapList()
-        amap._IdfAmapList__session = mock_session
+        amap._session = mock_session
 
-        with patch.object(amap, "_IdfAmapList__ensure_session", return_value=mock_session):
+        with patch.object(amap, "_ensure_session", return_value=mock_session):
             result = amap.call({"departement": "75"})
 
         assert result == []
@@ -51,7 +51,7 @@ class TestAmapList:
         mock_session.post.side_effect = [bad_response, good_response]
 
         amap = IdfAmapList()
-        with patch.object(amap, "_IdfAmapList__ensure_session", return_value=mock_session):
+        with patch.object(amap, "_ensure_session", return_value=mock_session):
             result = amap.call({"departement": "75"})
 
         assert mock_session.post.call_count == 2
@@ -64,6 +64,6 @@ class TestAmapList:
         mock_session.post.return_value = mock_response
 
         amap = IdfAmapList()
-        with patch.object(amap, "_IdfAmapList__ensure_session", return_value=mock_session):
+        with patch.object(amap, "_ensure_session", return_value=mock_session):
             with pytest.raises(requests.HTTPError):
                 amap.call({"departement": "75"})

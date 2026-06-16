@@ -8,12 +8,12 @@ from amap_collector.core.hn.validations import HnValidationError as ValidationEr
 class TestClientPayload:
     def test_default_payload_has_no_department(self) -> None:
         client = HnAmapClient()
-        payload = client._HnAmapClient__payload()
+        payload = client._payload()
         assert payload["department"] is None
 
     def test_payload_with_department(self) -> None:
         client = HnAmapClient().with_department("76")
-        assert client._HnAmapClient__payload()["department"] == "76"
+        assert client._payload()["department"] == "76"
 
 
 class TestClientValidation:

@@ -35,5 +35,5 @@ dev = [
     "ty>=0.0.49",
 ]
 
-[tool.ty]
+[tool.ty.environment]
 python-version = "3.12"

@@ -8,11 +8,11 @@ from amap_collector.core.ia44.validations import Ia44ValidationError as Validati
 class TestClientDepartment:
     def test_default_has_no_department(self) -> None:
         client = Ia44AmapClient()
-        assert client._Ia44AmapClient__department is None
+        assert client._department is None
 
     def test_department_stored_after_with_department(self) -> None:
         client = Ia44AmapClient().with_department("44")
-        assert client._Ia44AmapClient__department == "44"
+        assert client._department == "44"
 
 
 class TestClientValidation:
