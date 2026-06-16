@@ -8,7 +8,7 @@ from amap_collector.core.idf.validations import IdfValidationError as Validation
 class TestClientPayload:
     def test_default_payload(self) -> None:
         client = IdfAmapClient()
-        payload = client._IdfAmapClient__payload()
+        payload = client._payload()
         assert payload["recherche"] == "amap"
         assert payload["departement"] == "75"
         assert payload["km_autour"] == "2"
@@ -16,17 +16,17 @@ class TestClientPayload:
 
     def test_payload_with_department(self) -> None:
         client = IdfAmapClient().with_department("92")
-        assert client._IdfAmapClient__payload()["departement"] == "92"
+        assert client._payload()["departement"] == "92"
 
     def test_payload_with_km_radius(self) -> None:
         client = IdfAmapClient().with_km_radius("10")
-        assert client._IdfAmapClient__payload()["km_autour"] == "10"
+        assert client._payload()["km_autour"] == "10"
 
     def test_payload_with_zip_code(self) -> None:
         with patch("amap_collector.core.idf.validations.ZipCodeInfo") as MockZip:
             MockZip.return_value.call.return_value = {"features": [{"properties": {"postcode": "75019"}}]}
             client = IdfAmapClient().with_zip_code("75019")
-        assert client._IdfAmapClient__payload()["cp"] == "75019"
+        assert client._payload()["cp"] == "75019"
 
 
 class TestClientValidation:

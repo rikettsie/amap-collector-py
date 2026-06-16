@@ -16,7 +16,7 @@ class HnAmapList:
     def __init__(self) -> None:
         self.__list_uri: str = f"{self.BASE_URI}/{self.AMAP_LIST_PATH}"
 
-    def call(self, data: dict[str, str]) -> list[dict[str, Any]]:
+    def call(self, data: dict[str, str | None]) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
         seen_ids: set[str] = set()
         amap_list_parser = HnAmapListParser()
@@ -27,7 +27,7 @@ class HnAmapList:
         while True:
             ret = requests.get(self.__list_uri, params={"page": page}, headers=self.HEADERS)
 
-            if ret.status_code == requests.codes.not_found:
+            if ret.status_code == 404:
                 break
             ret.raise_for_status()
 
@@ -67,7 +67,7 @@ class HnAmapList:
 
         return results
 
-    def __is_in_department(self, item: dict[str, Any], dept: str) -> bool:
+    def __is_in_department(self, item: dict[str, Any], dept: str | None) -> bool:
         if addr := item["delivery"]["address"]:
             found_dept: str = addr.split()[-2][0:2]
             return found_dept == dept
@@ -108,7 +108,7 @@ class HnFarmList:
 
         while True:
             ret = requests.get(self.__list_uri, params={"page": page}, headers=self.HEADERS)
-            if ret.status_code == requests.codes.not_found:
+            if ret.status_code == 404:
                 break
             ret.raise_for_status()
 

@@ -20,9 +20,9 @@ class IdfAmapClient:
     """
 
     def __init__(self) -> None:
-        self.__department: Optional[str] = None   # `departement` param
-        self.__km_radius: Optional[str] = None    # `km_autour` param
-        self.__zip_code: Optional[str] = None     # `cp` param
+        self._department: Optional[str] = None   # `departement` param
+        self._km_radius: Optional[str] = None    # `km_autour` param
+        self._zip_code: Optional[str] = None     # `cp` param
 
     def with_department(self, department: str) -> Self:
         """Set the department code to search in.
@@ -36,7 +36,7 @@ class IdfAmapClient:
         Raises:
             IdfValidationError: If the department code is not supported.
         """
-        self.__department = validations.validate_department(department)
+        self._department = validations.validate_department(department)
         return self
 
     def with_km_radius(self, km_radius: str) -> Self:
@@ -51,7 +51,7 @@ class IdfAmapClient:
         Raises:
             ValidationError: If the radius value is not supported.
         """
-        self.__km_radius = validations.validate_km_radius(km_radius)
+        self._km_radius = validations.validate_km_radius(km_radius)
         return self
 
     def with_zip_code(self, zip_code: str) -> Self:
@@ -68,7 +68,7 @@ class IdfAmapClient:
         Raises:
             ValidationError: If the zip code is not recognised.
         """
-        self.__zip_code = validations.validate_zip_code(zip_code)
+        self._zip_code = validations.validate_zip_code(zip_code)
         return self
 
     def get_amap_list(self) -> list[dict[str, str]]:
@@ -83,18 +83,18 @@ class IdfAmapClient:
             IdfAmapClientError: If the HTTP request fails.
         """
         try:
-            return IdfAmapList().call(self.__payload())
+            return IdfAmapList().call(self._payload())
         except requests.RequestException as err:
             raise IdfAmapClientError(err)
 
 
-    def __payload(self) -> dict[str, str]:
+    def _payload(self) -> dict[str, str]:
         pl: dict[str, str] = {"recherche": "amap"}
 
-        pl["departement"] = self.__department if self.__department else validations.DEFAULT_DEPT
-        pl["km_autour"] = self.__km_radius if self.__km_radius else validations.DEFAULT_RADIUS
+        pl["departement"] = self._department if self._department else validations.DEFAULT_DEPT
+        pl["km_autour"] = self._km_radius if self._km_radius else validations.DEFAULT_RADIUS
 
-        if self.__zip_code:
-            pl["cp"] = self.__zip_code
+        if self._zip_code:
+            pl["cp"] = self._zip_code
 
         return pl

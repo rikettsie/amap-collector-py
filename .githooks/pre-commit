@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -e
+uv run --with ruff ruff check .
+uv run ty check .

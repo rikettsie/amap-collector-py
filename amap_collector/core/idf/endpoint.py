@@ -14,23 +14,23 @@ class IdfAmapList:
 
     def __init__(self) -> None:
         self.__uri: str = f"{self.BASE_URI}/{self.AMAP_LIST_PATH}"
-        self.__session: Optional[requests.Session] = None
+        self._session: Optional[requests.Session] = None
 
-    def __ensure_session(self, force: bool = False) -> requests.Session:
-        if force or not self.__session:
+    def _ensure_session(self, force: bool = False) -> requests.Session:
+        if force or not self._session:
             session = requests.Session()
             session.headers.update(self.HEADERS)
             session.get(self.__uri)
-            self.__session = session
-        return self.__session
+            self._session = session
+        return self._session
 
     def call(self, data: dict[str, str]) -> list[dict[str, Any]]:
-        session = self.__ensure_session()
+        session = self._ensure_session()
         try:
             ret = session.post(self.__uri, data=data)
             ret.raise_for_status()
         except requests.RequestException:
-            session = self.__ensure_session(force=True)
+            session = self._ensure_session(force=True)
             ret = session.post(self.__uri, data=data)
             ret.raise_for_status()
 

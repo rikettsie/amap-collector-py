@@ -176,7 +176,7 @@ class Ia44FarmerDetailParser:
         soup = BeautifulSoup(html, 'html.parser')
 
         meta = soup.find('meta', {'itemprop': 'name'})
-        name = html_lib.unescape(meta['content']) if meta else ''
+        name = html_lib.unescape(str(meta['content'])) if meta else ''
 
         address_el = soup.select_one('.row-postal-address .address-data p')
         address = address_el.get_text(strip=True) if address_el else ''

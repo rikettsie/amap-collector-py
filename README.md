@@ -143,3 +143,21 @@ Using [ruff](https://docs.astral.sh/ruff/) for linting:
 ```bash
 docker run --rm amap-collector uv run --with ruff ruff check .
 ```
+
+## Run the type checker
+
+Using [ty](https://github.com/astral-sh/ty):
+
+```bash
+uv run ty check .
+```
+
+# Contributing
+
+Contributions are welcome — feel free to open issues and pull requests for bug fixes and feature requests.
+
+After cloning the repo, activate the git hooks to run type checks locally before each commit:
+
+```bash
+git config core.hooksPath .githooks
+```

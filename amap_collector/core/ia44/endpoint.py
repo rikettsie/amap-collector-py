@@ -65,7 +65,7 @@ class Ia44AmapList:
         while True:
             url = f"{self.BASE_URI}{self.LIST_PATH}&paged={page}"
             ret = requests.get(url, headers=self.HEADERS)
-            if ret.status_code == requests.codes.not_found:
+            if ret.status_code == 404:
                 break
             ret.raise_for_status()
 
@@ -183,7 +183,7 @@ class Ia44FarmList:
         while True:
             url = f"{self.BASE_URI}{self.FARM_LIST_PATH}&paged={page}"
             ret = requests.get(url, headers=self.HEADERS)
-            if ret.status_code == requests.codes.not_found:
+            if ret.status_code == 404:
                 break
             ret.raise_for_status()
 

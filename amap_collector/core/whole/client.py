@@ -13,17 +13,17 @@ class WholeAmapClientError(RuntimeError):
 
 class WholeAmapClient:
     def __init__(self) -> None:
-        self.__department: Optional[str] = None
+        self._department: Optional[str] = None
 
     def with_department(self, department: str) -> Self:
-        self.__department = validations.validate_department(department)
+        self._department = validations.validate_department(department)
         return self
 
     def get_amap_list(self) -> list[dict]:
         try:
-            return WholeAmapList().call(self.__payload())
+            return WholeAmapList().call(self._payload())
         except requests.RequestException as err:
             raise WholeAmapClientError(err)
 
-    def __payload(self) -> dict[str, Optional[str]]:
-        return {"department": self.__department}
+    def _payload(self) -> dict[str, Optional[str]]:
+        return {"department": self._department}

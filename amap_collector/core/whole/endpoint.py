@@ -14,8 +14,10 @@ class WholeAmapList:
         "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
     }
 
-    def call(self, data: dict[str, str]) -> list[dict[str, Any]]:
+    def call(self, data: dict[str, str | None]) -> list[dict[str, Any]]:
         dept = data["department"]
+        if not dept:
+            return []
         index_parser = WholeIndexParser()
         list_parser = WholeAmapListParser()
 

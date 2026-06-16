@@ -20,7 +20,7 @@ class HnAmapClient:
     """
 
     def __init__(self) -> None:
-        self.__department: Optional[str] = None
+        self._department: Optional[str] = None
 
     def with_department(self, department: str) -> Self:
         """Set the department code to search in.
@@ -34,7 +34,7 @@ class HnAmapClient:
         Raises:
             HnValidationError: If the department code is not supported.
         """
-        self.__department = validations.validate_department(department)
+        self._department = validations.validate_department(department)
         return self
 
     def get_amap_list(self) -> list[dict[str, str]]:
@@ -49,7 +49,7 @@ class HnAmapClient:
             HnAmapClientError: If the HTTP request fails.
         """
         try:
-            return HnAmapList().call(self.__payload())
+            return HnAmapList().call(self._payload())
         except requests.RequestException as err:
             raise HnAmapClientError(err)
 
@@ -60,5 +60,5 @@ class HnAmapClient:
         except requests.RequestException as err:
             raise HnAmapClientError(err)
 
-    def __payload(self) -> dict[str, Optional[str]]:
-        return {"department": self.__department}
+    def _payload(self) -> dict[str, Optional[str]]:
+        return {"department": self._department}

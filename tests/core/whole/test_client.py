@@ -8,11 +8,11 @@ from amap_collector.core.whole.validations import WholeValidationError
 class TestClientPayload:
     def test_default_payload_has_no_department(self) -> None:
         client = WholeAmapClient()
-        assert client._WholeAmapClient__payload()["department"] is None
+        assert client._payload()["department"] is None
 
     def test_payload_with_department(self) -> None:
         client = WholeAmapClient().with_department("18")
-        assert client._WholeAmapClient__payload()["department"] == "18"
+        assert client._payload()["department"] == "18"
 
 
 class TestClientValidation:
@@ -22,7 +22,7 @@ class TestClientValidation:
 
     def test_valid_department_accepted(self) -> None:
         client = WholeAmapClient().with_department("18")
-        assert client._WholeAmapClient__payload()["department"] == "18"
+        assert client._payload()["department"] == "18"
 
 
 class TestClientGetAmapList:
