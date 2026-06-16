@@ -17,6 +17,17 @@ jobs:
           python-version: "3.12"
       - run: uv run --with ruff ruff check .
 
+  typecheck:
+    name: Typecheck (ty)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync --frozen
+      - run: uv run ty check .
+
   test:
     name: Test (pytest)
     runs-on: ubuntu-latest
